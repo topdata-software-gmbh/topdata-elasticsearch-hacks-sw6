@@ -3,7 +3,7 @@ filename: "_ai/backlog/active/260525_1730__IMPLEMENTATION_PLAN__synonym_manageme
 title: "Custom Elasticsearch Synonym Management & Zero-Result Analytics Suite"
 createdAt: 2026-05-25 17:30
 updatedAt: 2026-05-25 17:30
-status: draft
+status: completed
 priority: medium
 tags: [elasticsearch, synonyms, analytics, command-line, api, shopware-6.7]
 estimatedComplexity: moderate
@@ -39,7 +39,7 @@ Six modular CLI commands are added to allow seamless synonym editing, auditing, 
 | Requirement / Parameter | Value |
 | --- | --- |
 | Shopware Platform Compatibility | 6.7.* |
-| PHP Target Version | >= 8.2 |
+| PHP Target Version | >= 8.3 |
 | Database Engine | MySQL >= 8.0 / MariaDB >= 10.11 |
 | Output Encoding | UTF-8 |
 | Coding Standards | PSR-12, SOLID Principles |
@@ -591,7 +591,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\ZeroSearchService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:export-zero-results',
+    name: 'topdata:es-hacks:export-zero-results',
     description: 'Export search queries that returned zero results for analysis or LLM synonym generation'
 )]
 class Command_ExportZeroResults extends Command
@@ -688,7 +688,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:import-synonyms',
+    name: 'topdata:es-hacks:import-synonyms',
     description: 'Import synonym mapping rules from a generated text file back into the store database'
 )]
 class Command_ImportSynonyms extends Command
@@ -745,7 +745,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:list-synonyms',
+    name: 'topdata:es-hacks:list-synonyms',
     description: 'View and filter synonym records currently active in the database store'
 )]
 class Command_ListSynonyms extends Command
@@ -810,7 +810,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:delete-synonym',
+    name: 'topdata:es-hacks:delete-synonym',
     description: 'Deletes a specific synonym configuration rule by key term'
 )]
 class Command_DeleteSynonym extends Command
@@ -864,7 +864,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:clear-synonyms',
+    name: 'topdata:es-hacks:clear-synonyms',
     description: 'Bulk purges all active synonym mappings from the database'
 )]
 class Command_ClearSynonyms extends Command
@@ -926,7 +926,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:export-synonyms',
+    name: 'topdata:es-hacks:export-synonyms',
     description: 'Exports current synonym records from the database into a backup text file'
 )]
 class Command_ExportSynonyms extends Command
@@ -983,7 +983,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:validate-synonyms',
+    name: 'topdata:es-hacks:validate-synonyms',
     description: 'Validates formatting syntax of a local synonym text file without importing'
 )]
 class Command_ValidateSynonyms extends Command
@@ -1235,56 +1235,56 @@ This plugin contains a comprehensive suite of console commands to help merchants
 Extract terms entered by customers that returned no matches, formatted directly for an LLM prompt:
 ```bash
 # Print standard console table view of failures
-php bin/console elasticsearchhackssw6:export-zero-results --limit=50 --min-count=2
+php bin/console topdata:es-hacks:export-zero-results --limit=50 --min-count=2
 
 # Export directly into a pre-formatted LLM copy-paste prompt file
-php bin/console elasticsearchhackssw6:export-zero-results --format=llm-prompt --output=var/log/prompt.txt
+php bin/console topdata:es-hacks:export-zero-results --format=llm-prompt --output=var/log/prompt.txt
 ```
 
 ### 2. Validate Synonym Mapping Files
 Test a local synonyms text file for syntax, missing elements, or structural errors before committing changes to the database:
 ```bash
-php bin/console elasticsearchhackssw6:validate-synonyms var/log/synonyms.txt
+php bin/console topdata:es-hacks:validate-synonyms var/log/synonyms.txt
 ```
 
 ### 3. Dry-Run and Import Mappings
 Import generated synonyms text files using the explicit mapping format (`term => synonym1, synonym2`):
 ```bash
 # Perform validation checks without writing to the database
-php bin/console elasticsearchhackssw6:import-synonyms var/log/synonyms.txt --dry-run
+php bin/console topdata:es-hacks:import-synonyms var/log/synonyms.txt --dry-run
 
 # Execute database import
-php bin/console elasticsearchhackssw6:import-synonyms var/log/synonyms.txt
+php bin/console topdata:es-hacks:import-synonyms var/log/synonyms.txt
 ```
 
 ### 4. Search and List Registered Mappings
 Inspect synonym entries currently configured in the database using filters and pagination:
 ```bash
 # List all active mappings in a structured table
-php bin/console elasticsearchhackssw6:list-synonyms --limit=50
+php bin/console topdata:es-hacks:list-synonyms --limit=50
 
 # Filter active mappings by search criteria
-php bin/console elasticsearchhackssw6:list-synonyms --filter="papier"
+php bin/console topdata:es-hacks:list-synonyms --filter="papier"
 ```
 
 ### 5. Export Mappings (Backups/Manual Audits)
 Dump currently stored synonym mappings to a file for backup or local editing:
 ```bash
-php bin/console elasticsearchhackssw6:export-synonyms --output=var/log/synonym_backup.txt
+php bin/console topdata:es-hacks:export-synonyms --output=var/log/synonym_backup.txt
 ```
 
 ### 6. Delete a Specific Mapping
 Remove a unique synonym configuration using its left-hand key search term:
 ```bash
-php bin/console elasticsearchhackssw6:delete-synonym "wc-papier"
+php bin/console topdata:es-hacks:delete-synonym "wc-papier"
 ```
 
 ### 7. Clear All Synonym Definitions
 Completely wipe all stored synonym records. Requires interactive confirmation unless forced:
 ```bash
-php bin/console elasticsearchhackssw6:clear-synonyms
+php bin/console topdata:es-hacks:clear-synonyms
 # Or bypass the confirmation prompt:
-php bin/console elasticsearchhackssw6:clear-synonyms --force
+php bin/console topdata:es-hacks:clear-synonyms --force
 ```
 
 ---

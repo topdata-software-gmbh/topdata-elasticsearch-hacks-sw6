@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
-    name: 'elasticsearchhackssw6:example',
+    name: 'topdata:es-hacks:example',
     description: 'Example command for ElasticsearchHacksSW6 plugin'
 )]
 class ExampleCommand extends Command

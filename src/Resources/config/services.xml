@@ -4,6 +4,69 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Formatting Utility Service -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Service\SearchExportFormatter" public="false"/>
+
+        <!-- Core Business Logic Services -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Service\ZeroSearchService" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SearchExportFormatter"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- Storefront Search Fail Aggregation Subscriber -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ProductSearchSubscriber">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Command Line Control Suite Services -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ExportZeroResults">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\ZeroSearchService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ImportSynonyms">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ListSynonyms">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DeleteSynonym">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ClearSynonyms">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ExportSynonyms">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ValidateSynonyms">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <!-- Action API Route Controllers -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Controller\ZeroResultsExportController" public="true">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\ZeroSearchService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="Topdata\TopdataElasticsearchHacksSW6\Controller\StorefrontExampleController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
