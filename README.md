@@ -18,7 +18,8 @@ This plugin optimizes Elasticsearch tokenization on Shopware 6.7 to allow better
 3. Reset and rebuild the Elasticsearch search indices to apply the updated mappings:
    ```bash
    php bin/console es:reset
-   php bin/console es:index
+   php bin/console es:index --no-queue
+   php bin/console es:create:alias
    ```
 
 ## Requirements
