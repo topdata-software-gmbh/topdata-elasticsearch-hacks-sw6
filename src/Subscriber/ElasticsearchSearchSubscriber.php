@@ -41,26 +41,26 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
             $keywordField = sprintf('name.%s', $languageId);
 
             $search->addQuery(
-                new MatchPhraseQuery($analyzedField, $lowerTerm, ['boost' => 15.0]),
+                new MatchPhraseQuery($analyzedField, $lowerTerm, ['boost' => 30.0]),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new MatchQuery($analyzedField, $lowerTerm, ['boost' => 5.0, 'operator' => 'and']),
+                new MatchQuery($analyzedField, $lowerTerm, ['boost' => 20.0, 'operator' => 'and']),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new MatchQuery($delimiterField, $lowerTerm, ['boost' => 1.5, 'operator' => 'and']),
+                new MatchQuery($delimiterField, $lowerTerm, ['boost' => 15.0, 'operator' => 'and']),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new WildcardQuery($keywordField, sprintf('* %s *', $lowerTerm), ['boost' => 10.0]),
+                new WildcardQuery($keywordField, sprintf('* %s *', $lowerTerm), ['boost' => 15.0]),
                 BoolQuery::SHOULD
             );
             $search->addQuery(
-                new WildcardQuery($keywordField, sprintf('%s *', $lowerTerm), ['boost' => 10.0]),
+                new WildcardQuery($keywordField, sprintf('%s *', $lowerTerm), ['boost' => 15.0]),
                 BoolQuery::SHOULD
             );
 
