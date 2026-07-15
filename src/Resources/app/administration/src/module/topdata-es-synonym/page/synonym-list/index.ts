@@ -18,7 +18,7 @@ Component.register('topdata-es-synonym-list', {
         <template #content>
             <sw-entity-listing
                 v-if="items"
-                :items="items"
+                :data-source="items"
                 :columns="columns"
                 :repository="repository"
                 :criteria-limit="limit"
@@ -122,6 +122,10 @@ Component.register('topdata-es-synonym-list', {
                 ? this.$tc('topdata-es-synonym.modalTitleAdd')
                 : this.$tc('topdata-es-synonym.modalTitleEdit');
         },
+    },
+
+    mounted() {
+        this.getList();
     },
 
     methods: {

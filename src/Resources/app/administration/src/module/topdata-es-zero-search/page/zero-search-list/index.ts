@@ -13,7 +13,7 @@ Component.register('topdata-es-zero-search-list', {
         <template #content>
             <sw-entity-listing
                 v-if="items"
-                :items="items"
+                :data-source="items"
                 :columns="columns"
                 :repository="repository"
                 :criteria-limit="limit"
