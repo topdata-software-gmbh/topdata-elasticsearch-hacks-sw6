@@ -30,33 +30,14 @@ class ElasticsearchAnalysisCompilerPass implements CompilerPassInterface
             'split_on_case_change' => true,
         ];
 
-        $analyzersToModify = [
-            'sw_german_analyzer',
-            'sw_english_analyzer',
-            'sw_default_analyzer',
+        $analysis['analyzer']['topdata_delimiter_analyzer'] = [
+            'type' => 'custom',
+            'tokenizer' => 'standard',
+            'filter' => [
+                'topdata_word_delimiter',
+                'lowercase',
+            ],
         ];
-
-        foreach ($analyzersToModify as $analyzerName) {
-            if (!isset($analysis['analyzer'][$analyzerName])) {
-                $analysis['analyzer'][$analyzerName] = [
-                    'type' => 'custom',
-                    'tokenizer' => 'standard',
-                    'filter' => ['lowercase'],
-                ];
-            }
-
-            $filters = $analysis['analyzer'][$analyzerName]['filter'] ?? [];
-            if (!\in_array('topdata_word_delimiter', $filters, true)) {
-                $lowercaseIndex = \array_search('lowercase', $filters, true);
-                if ($lowercaseIndex !== false) {
-                    \array_splice($filters, $lowercaseIndex, 0, 'topdata_word_delimiter');
-                } else {
-                    $filters[] = 'topdata_word_delimiter';
-                    $filters[] = 'lowercase';
-                }
-                $analysis['analyzer'][$analyzerName]['filter'] = $filters;
-            }
-        }
 
         $container->setParameter('elasticsearch.analysis', $analysis);
     }

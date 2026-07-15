@@ -6,6 +6,7 @@ use OpenSearchDSL\Query\Compound\BoolQuery;
 use OpenSearchDSL\Query\FullText\MatchPhraseQuery;
 use OpenSearchDSL\Query\FullText\MatchQuery;
 use OpenSearchDSL\Query\TermLevel\PrefixQuery;
+use OpenSearchDSL\Query\TermLevel\WildcardQuery;
 use Shopware\Elasticsearch\Framework\DataAbstractionLayer\Event\ElasticsearchEntitySearcherSearchEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -36,6 +37,7 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
 
         foreach ($languageIdChain as $languageId) {
             $analyzedField = sprintf('name.%s.search', $languageId);
+            $delimiterField = sprintf('name.%s.delimiter', $languageId);
             $keywordField = sprintf('name.%s', $languageId);
 
             $search->addQuery(
@@ -45,6 +47,20 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
 
             $search->addQuery(
                 new MatchQuery($analyzedField, $lowerTerm, ['boost' => 5.0, 'operator' => 'and']),
+                BoolQuery::SHOULD
+            );
+
+            $search->addQuery(
+                new MatchQuery($delimiterField, $lowerTerm, ['boost' => 1.5, 'operator' => 'and']),
+                BoolQuery::SHOULD
+            );
+
+            $search->addQuery(
+                new WildcardQuery($keywordField, sprintf('* %s *', $lowerTerm), ['boost' => 10.0]),
+                BoolQuery::SHOULD
+            );
+            $search->addQuery(
+                new WildcardQuery($keywordField, sprintf('%s *', $lowerTerm), ['boost' => 10.0]),
                 BoolQuery::SHOULD
             );
 

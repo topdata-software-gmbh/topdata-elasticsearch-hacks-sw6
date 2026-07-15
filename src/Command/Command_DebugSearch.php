@@ -111,8 +111,23 @@ class Command_DebugSearch extends Command
 
         $should = [];
         foreach ($languageFields as $analyzedField => $keywordField) {
+            // Derive the delimiter sub-field name
+            $delimiterField = str_replace('.search', '.delimiter', $analyzedField);
+
+            // 1. Clean EXACT Match Phrase (boost 15.0)
             $should[] = ['match_phrase' => [$analyzedField => ['query' => $lowerTerm, 'boost' => 15.0]]];
+
+            // 2. Clean FULL text match (boost 5.0)
             $should[] = ['match' => [$analyzedField => ['query' => $lowerTerm, 'boost' => 5.0, 'operator' => 'and']]];
+
+            // 3. Fallback Delimiter match (boost 1.5)
+            $should[] = ['match' => [$delimiterField => ['query' => $lowerTerm, 'boost' => 1.5, 'operator' => 'and']]];
+
+            // 4. Standalone Word Wildcards (boost 10.0)
+            $should[] = ['wildcard' => [$keywordField => ['value' => sprintf('* %s *', $lowerTerm), 'boost' => 10.0]]];
+            $should[] = ['wildcard' => [$keywordField => ['value' => sprintf('%s *', $lowerTerm), 'boost' => 10.0]]];
+
+            // 5. Prefix fallback
             $should[] = ['prefix' => [$keywordField => ['value' => $lowerTerm, 'boost' => 1.1]]];
         }
 

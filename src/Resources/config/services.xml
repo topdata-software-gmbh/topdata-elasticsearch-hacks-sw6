@@ -31,6 +31,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <!-- Elasticsearch Product Definition Decorator (delimiter subfield) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator"
+                 decorates="Shopware\Elasticsearch\Product\ElasticsearchProductDefinition">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator.inner"/>
+        </service>
+
         <!-- Debug Commands -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DebugSearch">
             <argument type="service" id="OpenSearch\Client"/>
