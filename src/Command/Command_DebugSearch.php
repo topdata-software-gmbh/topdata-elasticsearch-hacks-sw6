@@ -3,6 +3,7 @@
 namespace Topdata\TopdataElasticsearchHacksSW6\Command;
 
 use OpenSearch\Client;
+use Shopware\Core\Defaults;
 use Shopware\Elasticsearch\Framework\ElasticsearchHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,6 +30,7 @@ class Command_DebugSearch extends Command
         $this
             ->addArgument('term', InputArgument::REQUIRED, 'Search term')
             ->addOption('sales-channel-id', null, InputOption::VALUE_REQUIRED, 'Sales channel ID (optional)')
+            ->addOption('language-id', 'l', InputOption::VALUE_REQUIRED, 'Language ID (hex UUID, e.g. 2fbb5fe2e29a4d70aa5854ce7ce3e20b). Restricts query to this language and uses it for display. Defaults to the shop system language.', '')
             ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Number of results', '10');
     }
 
@@ -36,6 +38,14 @@ class Command_DebugSearch extends Command
     {
         $term = $input->getArgument('term');
         $limit = (int) $input->getOption('limit');
+        $languageId = (string) $input->getOption('language-id');
+        if ($languageId !== '') {
+            $languageId = strtolower(preg_replace('/[^0-9a-fA-F]/', '', $languageId) ?? '');
+        }
+        if ($languageId === '') {
+            $languageId = Defaults::LANGUAGE_SYSTEM;
+            $output->writeln(\sprintf('<comment>Using default language: %s</comment>', $languageId));
+        }
 
         $indexName = $this->esHelper->getIndexName(
             new \Shopware\Core\Content\Product\ProductDefinition()
@@ -57,8 +67,11 @@ class Command_DebugSearch extends Command
         $output->writeln('<comment>=== Index Mapping (name fields) ===</comment>');
         $this->printMapping($mapping, $actualIndex, $output);
 
-        $query = $this->buildSearchQuery($term, $actualIndex);
+        $query = $this->buildSearchQuery($term, $actualIndex, $languageId);
         $output->writeln('');
+        if ($languageId !== null && $languageId !== '') {
+            $output->writeln(\sprintf('<comment>=== Language filter: %s ===</comment>', $languageId));
+        }
         $output->writeln('<comment>=== ES Query (with explain) ===</comment>');
         $output->writeln(json_encode($query, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
@@ -75,12 +88,14 @@ class Command_DebugSearch extends Command
         $output->writeln(\sprintf('<comment>=== Results (%d total) ===</comment>', $response['hits']['total']['value'] ?? 0));
 
         foreach ($response['hits']['hits'] as $i => $hit) {
+            $name = $this->extractName($hit, $languageId);
             $output->writeln('');
             $output->writeln(\sprintf('<info>#%d: %s (score: %s)</info>',
                 $i + 1,
-                $hit['_source']['name']['de-DE'] ?? $hit['_id'],
+                $name !== '' ? $name : $hit['_id'],
                 $hit['_score']
             ));
+            $output->writeln(\sprintf('  ID: %s', $hit['_id']));
             if (isset($hit['_explanation'])) {
                 $this->printExplanation($hit['_explanation'], $output, '  ');
             }
@@ -89,67 +104,58 @@ class Command_DebugSearch extends Command
         return Command::SUCCESS;
     }
 
-    private function buildSearchQuery(string $term, string $index): array
+    private function buildSearchQuery(string $term, string $index, ?string $languageId): array
     {
         $lowerTerm = mb_strtolower($term);
-        $languageField = $this->getLanguageField($index);
+        $languageFields = $this->getLanguageFields($index, $languageId);
+
+        $should = [];
+        foreach ($languageFields as $analyzedField => $keywordField) {
+            $should[] = ['match_phrase' => [$analyzedField => ['query' => $lowerTerm, 'boost' => 15.0]]];
+            $should[] = ['match' => [$analyzedField => ['query' => $lowerTerm, 'boost' => 5.0, 'operator' => 'and']]];
+            $should[] = ['prefix' => [$keywordField => ['value' => $lowerTerm, 'boost' => 1.1]]];
+        }
 
         return [
             'query' => [
                 'bool' => [
-                    'must' => [
-                        [
-                            'dis_max' => [
-                                'queries' => [
-                                    [
-                                        'bool' => [
-                                            'should' => [
-                                                $this->buildFieldQuery($languageField, $lowerTerm, 5.0),
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    'should' => [
-                        ['term' => [$languageField => ['value' => $lowerTerm, 'boost' => 10]]],
-                        ['prefix' => [$languageField => ['value' => $lowerTerm, 'boost' => 5]]],
-                    ],
+                    'should' => $should,
                 ],
             ],
         ];
     }
 
-    private function buildFieldQuery(string $field, string $term, float $ranking): array
-    {
-        $tokens = preg_split('/\s+/u', $term, -1, \PREG_SPLIT_NO_EMPTY) ?: [$term];
-        $tokenCount = count($tokens);
-
-        $queries = [];
-
-        $queries[] = ['dis_max' => ['queries' => [
-            ['term' => [$field => ['value' => $term, 'boost' => 1]]],
-            ['match' => [$field . '.search' => ['query' => $term, 'boost' => 0.8, 'fuzziness' => 'AUTO:3,8', 'prefix_length' => 1]]],
-            ['prefix' => [$field . '.search' => ['value' => $term, 'boost' => 0.4]]],
-        ], 'boost' => $ranking]];
-
-        return ['dis_max' => ['queries' => $queries]];
-    }
-
-    private function getLanguageField(string $index): string
+    /**
+     * @return array<string,string> map of analyzed-field => keyword-field
+     */
+    private function getLanguageFields(string $index, ?string $languageId): array
     {
         $mapping = $this->client->indices()->getMapping(['index' => $index]);
         $props = $mapping[$index]['mappings']['properties'] ?? [];
 
         if (!isset($props['name']['properties'])) {
-            return 'name';
+            return ['name.search' => 'name'];
         }
 
         $langIds = array_keys($props['name']['properties']);
-        $langId = $langIds[0] ?? '';
 
-        return 'name.' . $langId;
+        if ($languageId !== null && $languageId !== '') {
+            $langIds = array_filter($langIds, static fn (string $id): bool => $id === $languageId);
+            if (empty($langIds)) {
+                $longForm = '0x' . substr($languageId, 0, 8);
+                $langIds = array_filter(array_keys($props['name']['properties']), static fn (string $id): bool => str_starts_with($id, $longForm));
+            }
+            if (empty($langIds)) {
+                return [];
+            }
+        }
+
+        $fields = [];
+        foreach ($langIds as $langId) {
+            $fields['name.' . $langId . '.search'] = 'name.' . $langId;
+        }
+
+        return $fields;
     }
 
     private function resolveActualIndex(string $aliasOrIndex): ?string
@@ -201,6 +207,26 @@ class Command_DebugSearch extends Command
         } else {
             $output->writeln('  (name is not a nested field)');
         }
+    }
+
+    private function extractName(array $hit, ?string $languageId): string
+    {
+        $name = $hit['_source']['name'] ?? null;
+        if (is_array($name)) {
+            if ($languageId !== null && $languageId !== '' && isset($name[$languageId]) && is_string($name[$languageId]) && $name[$languageId] !== '') {
+                return $name[$languageId];
+            }
+
+            foreach ($name as $value) {
+                if (is_string($value) && $value !== '') {
+                    return $value;
+                }
+            }
+
+            return '';
+        }
+
+        return (string) ($name ?? '');
     }
 
     private function printExplanation(array $explanation, OutputInterface $output, string $indent): void

@@ -35,20 +35,21 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
         $languageIdChain = $event->getContext()->getLanguageIdChain();
 
         foreach ($languageIdChain as $languageId) {
-            $field = sprintf('name.%s', $languageId);
+            $analyzedField = sprintf('name.%s.search', $languageId);
+            $keywordField = sprintf('name.%s', $languageId);
 
             $search->addQuery(
-                new MatchPhraseQuery($field, $lowerTerm, ['boost' => 12]),
+                new MatchPhraseQuery($analyzedField, $lowerTerm, ['boost' => 15.0]),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new MatchQuery($field, $lowerTerm, ['boost' => 5, 'operator' => 'and']),
+                new MatchQuery($analyzedField, $lowerTerm, ['boost' => 5.0, 'operator' => 'and']),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new PrefixQuery($field, $lowerTerm, ['boost' => 1.5]),
+                new PrefixQuery($keywordField, $lowerTerm, ['boost' => 1.1]),
                 BoolQuery::SHOULD
             );
         }
