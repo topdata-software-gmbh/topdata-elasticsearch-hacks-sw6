@@ -26,6 +26,18 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <!-- Elasticsearch Query Boosting Subscriber -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ElasticsearchSearchSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Debug Commands -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DebugSearch">
+            <argument type="service" id="OpenSearch\Client"/>
+            <argument type="service" id="Shopware\Elasticsearch\Framework\ElasticsearchHelper"/>
+            <tag name="console.command"/>
+        </service>
+
         <!-- Command Line Control Suite Services -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ImportSynonyms">
             <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
