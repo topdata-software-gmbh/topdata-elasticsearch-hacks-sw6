@@ -9,6 +9,11 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <!-- Synonym Entity Definition -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Entity\Synonym\SynonymEntityDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <!-- Core Business Logic Services -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" public="true">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
@@ -35,6 +40,12 @@
         <service id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator"
                  decorates="Shopware\Elasticsearch\Product\ElasticsearchProductDefinition">
             <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator.inner"/>
+        </service>
+
+        <!-- Elasticsearch Index Config Subscriber (injects synonyms from DB into index settings) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ElasticsearchIndexConfigSubscriber">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Debug Commands -->

@@ -1,7 +1,7 @@
 {
     "name":        "topdata/elasticsearch-hacks-sw6",
     "description": "Topdata Elasticsearch Hacks SW6",
-    "version":     "v1.2.0",
+    "version":     "v1.3.1",
     "type":        "shopware-platform-plugin",
     "license":     "MIT",
     "authors":     [

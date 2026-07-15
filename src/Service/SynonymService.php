@@ -182,6 +182,26 @@ class SynonymService
         return $importedCount;
     }
 
+    /**
+     * @return string[]
+     */
+    public function exportToArray(): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('term', 'synonyms')
+            ->from('topdata_es_synonym')
+            ->orderBy('term', 'ASC');
+
+        $rows = $qb->executeQuery()->fetchAllAssociative();
+        $rules = [];
+
+        foreach ($rows as $row) {
+            $rules[] = sprintf('%s => %s', trim($row['term']), trim($row['synonyms']));
+        }
+
+        return $rules;
+    }
+
     public function exportToString(): string
     {
         $qb = $this->connection->createQueryBuilder();
