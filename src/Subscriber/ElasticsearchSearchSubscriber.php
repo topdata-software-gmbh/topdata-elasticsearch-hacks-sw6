@@ -3,8 +3,9 @@
 namespace Topdata\TopdataElasticsearchHacksSW6\Subscriber;
 
 use OpenSearchDSL\Query\Compound\BoolQuery;
+use OpenSearchDSL\Query\FullText\MatchPhraseQuery;
+use OpenSearchDSL\Query\FullText\MatchQuery;
 use OpenSearchDSL\Query\TermLevel\PrefixQuery;
-use OpenSearchDSL\Query\TermLevel\TermQuery;
 use Shopware\Elasticsearch\Framework\DataAbstractionLayer\Event\ElasticsearchEntitySearcherSearchEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -37,12 +38,17 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
             $field = sprintf('name.%s', $languageId);
 
             $search->addQuery(
-                new TermQuery($field, $lowerTerm, ['boost' => 10]),
+                new MatchPhraseQuery($field, $lowerTerm, ['boost' => 12]),
                 BoolQuery::SHOULD
             );
 
             $search->addQuery(
-                new PrefixQuery($field, $lowerTerm, ['boost' => 5]),
+                new MatchQuery($field, $lowerTerm, ['boost' => 5, 'operator' => 'and']),
+                BoolQuery::SHOULD
+            );
+
+            $search->addQuery(
+                new PrefixQuery($field, $lowerTerm, ['boost' => 1.5]),
                 BoolQuery::SHOULD
             );
         }

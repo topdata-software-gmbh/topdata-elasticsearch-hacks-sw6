@@ -8,6 +8,7 @@ This plugin optimizes Elasticsearch tokenization on Shopware 6.7 to allow better
 ## Features
 * Globally registers a `word_delimiter_graph` token filter in Elasticsearch settings.
 * Overrides default language analyzers (`sw_german_analyzer`, `sw_english_analyzer`, `sw_default_analyzer`) to split terms dynamically without breaking default stemmers.
+* **Analyzed Query Boosting**: Employs analyzed `MatchPhraseQuery` and custom weights to ensure exact matches rank higher than broad compound matches (e.g. "Papierhandtücher" ranks higher than "Papierhandtücher-Spender").
 * **Synonym Suite**: Dynamically tracks failed storefront searches and offers a full suite of administrative CLI utilities to manage search synonym mappings.
 * **Category Search Exclusion**: Select categories (e.g., "Gratisartikel") directly in the plugin configuration to dynamically hide all assigned products from Storefront search and suggestion results, without breaking their layout on regular category pages.
 
