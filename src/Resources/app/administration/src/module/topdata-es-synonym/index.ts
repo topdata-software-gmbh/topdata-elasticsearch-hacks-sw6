@@ -23,6 +23,6 @@ Shopware.Module.register('topdata-es-synonym', {
         label: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.listTitle',
         color: '#189eff',
         path: 'topdata.es.synonym.list',
-        parent: 'topdata-es-zero-search',
+        parent: 'topdata-elasticsearch-hacks-sw6',
     }],
 });

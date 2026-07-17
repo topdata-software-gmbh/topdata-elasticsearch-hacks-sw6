@@ -1,26 +1,33 @@
 {
-    "topdata-es-zero-search": {
-        "title": "Zero Search Results",
-        "description": "Manage zero-result search terms",
-        "listTitle": "Search Terms",
-        "columnTerm": "Search Term",
-        "columnCount": "Count",
-        "columnLastSearchedAt": "Last Searched",
-        "columnCreatedAt": "First Seen"
-    },
-    "topdata-es-synonym": {
-        "title": "Synonyms",
-        "description": "Manage search synonyms for Elasticsearch",
-        "listTitle": "Search Synonyms",
-        "columnTerm": "Search Term",
-        "columnSynonyms": "Mapped Synonyms (Comma-separated)",
-        "columnCreatedAt": "Created At",
-        "buttonAdd": "Add Synonym",
-        "modalTitleAdd": "Create New Synonym",
-        "modalTitleEdit": "Edit Synonym",
-        "labelTerm": "Search Term (e.g. klopapier)",
-        "labelSynonyms": "Synonym Group (e.g. toilettenpapier, wc-papier)",
-        "placeholderSynonyms": "synonym1, synonym2, synonym3",
-        "saveSuccess": "Synonym saved successfully."
+    "TopdataElasticsearchHacksSW6": {
+        "nav":                    {
+            "mainTitle":         "Topdata ES",
+            "zeroSearchResults": "Zero Search Results",
+            "synonyms":          "Synonyms"
+        },
+        "topdata-es-zero-search": {
+            "title":                "Zero Search Results",
+            "description":          "Manage zero-result search terms",
+            "listTitle":            "Search Terms",
+            "columnTerm":           "Search Term",
+            "columnCount":          "Count",
+            "columnLastSearchedAt": "Last Searched",
+            "columnCreatedAt":      "First Seen"
+        },
+        "topdata-es-synonym":     {
+            "title":               "Synonyms",
+            "description":         "Manage search synonyms for Elasticsearch",
+            "listTitle":           "Search Synonyms",
+            "columnTerm":          "Search Term",
+            "columnSynonyms":      "Mapped Synonyms (Comma-separated)",
+            "columnCreatedAt":     "Created At",
+            "buttonAdd":           "Add Synonym",
+            "modalTitleAdd":       "Create New Synonym",
+            "modalTitleEdit":      "Edit Synonym",
+            "labelTerm":           "Search Term (e.g. klopapier)",
+            "labelSynonyms":       "Synonym Group (e.g. toilettenpapier, wc-papier)",
+            "placeholderSynonyms": "synonym1, synonym2, synonym3",
+            "saveSuccess":         "Synonym saved successfully."
+        }
     }
 }

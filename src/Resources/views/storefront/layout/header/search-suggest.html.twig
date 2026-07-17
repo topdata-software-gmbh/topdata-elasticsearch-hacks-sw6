@@ -1,0 +1,98 @@
+{% sw_extends '@Storefront/storefront/layout/header/search-suggest.html.twig' %}
+
+{% block layout_search_suggest %}
+    <style>
+        .search-suggest-container-categories .suggest-title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6c757d;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            cursor: default;
+        }
+        .search-suggest-container-categories .suggest-title:hover {
+            background-color: transparent;
+        }
+    </style>
+    {{ parent() }}
+{% endblock %}
+
+{% block layout_search_suggest_container %}
+    {% if page.extensions and page.extensions.topdata_category_suggest %}
+        {% set categoryData = page.extensions.topdata_category_suggest %}
+        {% set categories = categoryData.categories %}
+        {% set categoriesTotal = categoryData.total %}
+
+        {% if categories|length > 0 %}
+            <ul class="search-suggest-container search-suggest-container-categories">
+                <li class="search-suggest-product js-result suggest-title">
+                    {{ 'TopdataElasticsearchHacksSW6.search.titleCategories'|trans }}
+                </li>
+                {% for category in categories %}
+                    <li class="search-suggest-product js-result">
+                        <a href="{{ seoUrl('frontend.navigation.page', {navigationId: category.id}) }}"
+                           title="{{ category.translated.name }}"
+                           class="search-suggest-product-link">
+                            <div class="row align-items-center g-0">
+                                <div class="col-auto search-suggest-product-image-container">
+                                    {% if category.media and category.media.url %}
+                                        {% sw_thumbnails 'search-suggest-category-image-thumbnails' with {
+                                            media: category.media,
+                                            sizes: {
+                                                'default': '100px'
+                                            },
+                                            attributes: {
+                                                'class': 'search-suggest-product-image',
+                                                'alt': category.translated.name,
+                                                'title': category.translated.name
+                                            }
+                                        } %}
+                                    {% else %}
+                                        {% sw_icon 'folder' style {
+                                            'size': 'lg'
+                                        } %}
+                                    {% endif %}
+                                </div>
+                                <div class="col search-suggest-product-name">
+                                    {{ category.translated.name }}
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+                {% if categoriesTotal > categories|length %}
+                    <li class="js-result search-suggest-total">
+                        <div class="row align-items-center g-0">
+                            <div class="col">
+                                <a href="{{ path('frontend.search.page') }}?search={{ page.searchTerm }}"
+                                   title="{{ 'header.searchAllResults'|trans|striptags }}"
+                                   class="search-suggest-total-link">
+                                    {% sw_icon 'arrow-head-right' style { 'size': 'sm' } %}
+                                    {{ 'TopdataElasticsearchHacksSW6.search.categoryResultsLink'|trans|sw_sanitize }}
+                                </a>
+                            </div>
+                            <div class="col-auto search-suggest-total-count">
+                                {{ 'header.searchResults'|trans({
+                                    '%count%': categoriesTotal,
+                                })|sw_sanitize }}
+                            </div>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}
+
+{% block layout_search_suggest_results %}
+    {% if page.extensions and page.extensions.topdata_category_suggest and page.extensions.topdata_category_suggest.categories|length > 0 %}
+        <li class="search-suggest-product js-result suggest-title">
+            {{ 'TopdataElasticsearchHacksSW6.search.titleProducts'|trans }}
+        </li>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+    "TopdataElasticsearchHacksSW6": {
+        "search": {
+            "titleCategories": "Categories",
+            "titleProducts": "Products",
+            "categoryResultsLink": "Show all category results"
+        }
+    }
+}

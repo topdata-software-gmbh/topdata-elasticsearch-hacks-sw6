@@ -1,5 +1,10 @@
 {
     "TopdataElasticsearchHacksSW6": {
+        "nav":                    {
+            "mainTitle":         "Topdata ES",
+            "zeroSearchResults": "Null-Suchergebnisse",
+            "synonyms":          "Synonyme"
+        },
         "topdata-es-zero-search": {
             "title":                "Null-Suchergebnisse",
             "description":          "Verwaltung von Suchbegriffen ohne Ergebnisse",
@@ -10,7 +15,6 @@
             "columnCreatedAt":      "Erstmals gesehen"
         },
         "topdata-es-synonym":     {
-            "title":               "Synonyme",
             "description":         "Verwaltung von Suchsynonymen für Elasticsearch",
             "listTitle":           "Suchsynonyme",
             "columnTerm":          "Suchbegriff (Term)",

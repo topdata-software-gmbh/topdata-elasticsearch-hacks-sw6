@@ -557,7 +557,7 @@ Shopware.Module.register('topdata-es-synonym', {
         label: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.listTitle',
         color: '#189eff',
         path: 'topdata.es.synonym.list',
-        parent: 'topdata-es-zero-search', // Nest under Zero Search parent menu item
+        parent: 'topdata-elasticsearch-hacks-sw6', // Nest under Zero Search parent menu item
     }],
 });
 ```

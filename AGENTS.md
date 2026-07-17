@@ -16,6 +16,7 @@ Plugin class: `src/TopdataElasticsearchHacksSW6.php` (registers `ElasticsearchAn
 - **Synonym injection** (`Subscriber/ElasticsearchIndexConfigSubscriber.php`): reads from `topdata_es_synonym` table, adds `topdata_synonym_filter` analyzer filter.
 - **Zero-result tracking** (`Subscriber/ProductSearchSubscriber.php`): raw SQL upsert to `topdata_es_zero_search`.
 - **Category exclusion** (`Subscriber/SearchCriteriaSubscriber.php`): `NotFilter` on `categoryTree` from system config.
+- **Category suggest** (`Subscriber/CategorySuggestSubscriber.php`): listens to `SuggestPageLoadedEvent`, searches categories via `SalesChannelRepository` with `ContainsFilter` on `name` (filtered by active, visible, page-type, respecting `excludedCategories` config and sales channel root categories). Results attached to `SuggestPage` via `topdata_category_suggest` extension. Template override in `views/storefront/layout/header/search-suggest.html.twig` renders categories above products with section titles.
 
 ## Database
 
@@ -71,6 +72,8 @@ Admin API: `GET /api/_action/topdata-elasticsearch-hacks-sw6/zero-results/export
 ## Storefront Views
 
 `src/Resources/views/storefront/` — extend `@Storefront/storefront/page/content-section.html.twig`.
+
+- **Search suggest**: `src/Resources/views/storefront/layout/header/search-suggest.html.twig` — extends core search-suggest template, prepends category results above products when matching categories exist.
 
 ## Configuration
 

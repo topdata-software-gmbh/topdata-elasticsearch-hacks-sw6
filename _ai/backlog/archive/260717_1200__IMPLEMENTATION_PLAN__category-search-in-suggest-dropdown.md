@@ -5,7 +5,8 @@ createdAt: 2026-07-17 12:00
 createdBy: opencode [qwen3.7-plus]
 updatedAt: 2026-07-17 12:00
 updatedBy: opencode [qwen3.7-plus]
-status: draft
+status: completed
+completedAt: 2026-07-17 20:28
 priority: high
 tags: [search, categories, storefront, suggest, elasticsearch]
 project: topdata-elasticsearch-hacks-sw6
@@ -513,6 +514,7 @@ updatedBy: opencode [qwen3.7-plus]
 planFile: "_ai/backlog/active/260717_1200__IMPLEMENTATION_PLAN__category-search-in-suggest-dropdown.md"
 project: "topdata-elasticsearch-hacks-sw6"
 status: completed
+completedAt: 2026-07-17 20:28
 filesCreated: 4
 filesModified: 3
 filesDeleted: 0
