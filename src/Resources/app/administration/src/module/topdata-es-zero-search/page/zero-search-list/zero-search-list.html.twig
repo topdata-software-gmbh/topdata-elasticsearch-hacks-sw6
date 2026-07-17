@@ -1,37 +1,35 @@
-<div class="topdata-es-zero-search-list">
-    <sw-page class="topdata-es-zero-search-list-page">
-        <template #smart-bar-header>
-            <h2>{{ $tc('topdata-es-zero-search.title') }}</h2>
-        </template>
+<sw-page class="topdata-es-zero-search-list-page">
+    <template #smart-bar-header>
+        <h2>{{ $tc('topdata-es-zero-search.title') }}</h2>
+    </template>
 
-        <template #content>
-            <sw-entity-listing
-                v-if="items"
-                :dataSource="items"
-                :columns="columns"
-                :repository="repository"
-                identifier="topdata-es-zero-search"
-                :show-settings="true"
-                :show-selection="false"
-                :allow-view="false"
-                :allow-edit="false"
-                :allow-delete="true"
-                :allow-inline-edit="false"
-                :full-page="true"
-                :sort-by="sortBy"
-                :sort-direction="sortDirection"
-                :is-loading="isLoading"
-                @page-change="onPageChange"
-                @column-sort="onSortColumn"
-            >
-                <template #column-lastSearchedAt="{ item }">
-                    <sw-time-ago v-if="item.lastSearchedAt" :date="item.lastSearchedAt" />
-                </template>
+    <template #content>
+        <sw-entity-listing
+            v-if="items"
+            :dataSource="items"
+            :columns="columns"
+            :repository="repository"
+            identifier="topdata-es-zero-search"
+            :show-settings="true"
+            :show-selection="false"
+            :allow-view="false"
+            :allow-edit="false"
+            :allow-delete="true"
+            :allow-inline-edit="false"
+            :full-page="true"
+            :sort-by="sortBy"
+            :sort-direction="sortDirection"
+            :is-loading="isLoading"
+            @page-change="onPageChange"
+            @column-sort="onSortColumn"
+        >
+            <template #column-lastSearchedAt="{ item }">
+                <sw-time-ago v-if="item.lastSearchedAt" :date="item.lastSearchedAt" />
+            </template>
 
-                <template #column-createdAt="{ item }">
-                    <sw-time-ago v-if="item.createdAt" :date="item.createdAt" />
-                </template>
-            </sw-entity-listing>
-        </template>
-    </sw-page>
-</div>
+            <template #column-createdAt="{ item }">
+                <sw-time-ago v-if="item.createdAt" :date="item.createdAt" />
+            </template>
+        </sw-entity-listing>
+    </template>
+</sw-page>
