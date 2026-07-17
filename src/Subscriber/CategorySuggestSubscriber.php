@@ -2,7 +2,6 @@
 
 namespace Topdata\TopdataElasticsearchHacksSW6\Subscriber;
 
-use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -19,8 +18,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CategorySuggestSubscriber implements EventSubscriberInterface
 {
-    private const CATEGORY_LIMIT = 5;
-
     public function __construct(
         private readonly SalesChannelRepository $categoryRepository,
         private readonly SystemConfigService $systemConfigService,
@@ -45,8 +42,13 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
         $salesChannelContext = $event->getSalesChannelContext();
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
 
+        $limit = (int) $this->systemConfigService->get(
+            'TopdataElasticsearchHacksSW6.config.categorySuggestLimit',
+            $salesChannelId
+        ) ?: 8;
+
         $criteria = new Criteria();
-        $criteria->setLimit(self::CATEGORY_LIMIT);
+        $criteria->setLimit($limit);
         $criteria->addFilter(new ContainsFilter('name', $term));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('visible', true));
@@ -89,9 +91,35 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $entities = $categories->getEntities();
+        $entities->sort(fn ($a, $b) => $this->sortByRelevance($a, $b, $term));
+
         $event->getPage()->addExtension('topdata_category_suggest', new ArrayEntity([
-            'categories' => $categories->getEntities(),
+            'categories' => $entities,
             'total' => $categories->getTotal(),
         ]));
+    }
+
+    private function sortByRelevance($a, $b, string $term): int
+    {
+        $aName = mb_strtolower($a->getTranslation('name') ?? $a->getName() ?? '');
+        $bName = mb_strtolower($b->getTranslation('name') ?? $b->getName() ?? '');
+        $termLower = mb_strtolower($term);
+
+        $aExact = $aName === $termLower;
+        $bExact = $bName === $termLower;
+
+        if ($aExact !== $bExact) {
+            return $aExact ? -1 : 1;
+        }
+
+        $aStartsWith = str_starts_with($aName, $termLower);
+        $bStartsWith = str_starts_with($bName, $termLower);
+
+        if ($aStartsWith !== $bStartsWith) {
+            return $aStartsWith ? -1 : 1;
+        }
+
+        return ($a->getLevel() ?? 0) <=> ($b->getLevel() ?? 0);
     }
 }

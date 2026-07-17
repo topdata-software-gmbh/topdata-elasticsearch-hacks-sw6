@@ -89,6 +89,12 @@
                                 </div>
                                 <div class="col search-suggest-product-name">
                                     {{ category.translated.name }}
+                                    {% set breadcrumb = category.translated.breadcrumb ?: [] %}
+                                    {% if breadcrumb|length > 1 %}
+                                        <div class="search-suggest-product-subtitle">
+                                            {{ breadcrumb|slice(0, -1)|join(' > ')|sw_sanitize }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </a>

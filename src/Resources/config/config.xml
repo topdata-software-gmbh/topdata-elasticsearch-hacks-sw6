@@ -38,5 +38,14 @@
             </options>
             <defaultValue>above</defaultValue>
         </component>
+
+        <component name="sw-number-field">
+            <name>categorySuggestLimit</name>
+            <label>Maximum number of category suggestions</label>
+            <label lang="de-DE">Maximale Anzahl Kategorie-Vorschläge</label>
+            <helpText>How many matching categories to show in the search suggest dropdown.</helpText>
+            <helpText lang="de-DE">Wie viele passende Kategorien in der Suchvorschau angezeigt werden.</helpText>
+            <defaultValue>8</defaultValue>
+        </component>
     </card>
 </config>
