@@ -26,7 +26,6 @@ class ElasticsearchAnalysisCompilerPass implements CompilerPassInterface
             'preserve_original' => true,
             'catenate_all' => true,
             'catenate_words' => true,
-            'generate_word_parts' => true,
             'split_on_case_change' => true,
         ];
 
