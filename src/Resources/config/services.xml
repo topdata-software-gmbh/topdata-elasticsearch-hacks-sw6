@@ -16,18 +16,18 @@
 
         <!-- Core Business Logic Services -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" public="true">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
         </service>
 
         <!-- Storefront Search Fail Aggregation Subscriber -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ProductSearchSubscriber">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Dynamic Storefront Search Exclusion Subscriber -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\SearchCriteriaSubscriber">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" key="$systemConfigService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -39,50 +39,50 @@
         <!-- Elasticsearch Product Definition Decorator (delimiter subfield) -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator"
                  decorates="Shopware\Elasticsearch\Product\ElasticsearchProductDefinition">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator.inner"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Elasticsearch\ProductElasticsearchDefinitionDecorator.inner" key="$decorated"/>
         </service>
 
         <!-- Elasticsearch Index Config Subscriber (injects synonyms from DB into index settings) -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ElasticsearchIndexConfigSubscriber">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Debug Commands -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DebugSearch">
-            <argument type="service" id="OpenSearch\Client"/>
-            <argument type="service" id="Shopware\Elasticsearch\Framework\ElasticsearchHelper"/>
+            <argument type="service" id="OpenSearch\Client" key="$client"/>
+            <argument type="service" id="Shopware\Elasticsearch\Framework\ElasticsearchHelper" key="$esHelper"/>
             <tag name="console.command"/>
         </service>
 
         <!-- Command Line Control Suite Services -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ImportSynonyms">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ListSynonyms">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DeleteSynonym">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ClearSynonyms">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ExportSynonyms">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ValidateSynonyms">
-            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
             <tag name="console.command"/>
         </service>
 
