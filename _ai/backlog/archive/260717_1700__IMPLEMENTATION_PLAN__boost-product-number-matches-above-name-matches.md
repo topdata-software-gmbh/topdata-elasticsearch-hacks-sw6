@@ -5,7 +5,8 @@ createdAt: 2026-07-17 17:00
 createdBy: AI [deepseek-v4-pro]
 updatedAt: 2026-07-17 17:00
 updatedBy: AI [deepseek-v4-pro]
-status: draft
+status: completed
+completedAt: 2026-07-17 16:39
 priority: critical
 tags: [elasticsearch, search-ranking, product-number, scoring, boost]
 project: topdata-elasticsearch-hacks-sw6
