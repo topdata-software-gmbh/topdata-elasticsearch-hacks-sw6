@@ -1,11 +1,11 @@
 <sw-page class="topdata-es-synonym-list-page">
     <template #smart-bar-header>
-        <h2>{{ $tc('topdata-es-synonym.title') }}</h2>
+        <h2>{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.title') }}</h2>
     </template>
 
     <template #smart-bar-actions>
         <sw-button variant="primary" @click="onAddSynonym">
-            {{ $tc('topdata-es-synonym.buttonAdd') }}
+            {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.buttonAdd') }}
         </sw-button>
     </template>
 
@@ -43,14 +43,14 @@
             <sw-text-field
                 v-model="currentEntity.term"
                 required
-                :label="$tc('topdata-es-synonym.labelTerm')"
+                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelTerm')"
             ></sw-text-field>
 
             <sw-textarea-field
                 v-model="currentEntity.synonyms"
                 required
-                :label="$tc('topdata-es-synonym.labelSynonyms')"
-                :placeholder="$tc('topdata-es-synonym.placeholderSynonyms')"
+                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelSynonyms')"
+                :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
             ></sw-textarea-field>
 
             <template #modal-footer>

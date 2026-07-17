@@ -33,17 +33,17 @@ Component.register('topdata-es-synonym-list', {
         columns() {
             return [{
                 property: 'term',
-                label: this.$tc('topdata-es-synonym.columnTerm'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnTerm'),
                 allowResize: true,
                 primary: true,
                 sortable: true,
             }, {
                 property: 'synonyms',
-                label: this.$tc('topdata-es-synonym.columnSynonyms'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnSynonyms'),
                 allowResize: true,
             }, {
                 property: 'createdAt',
-                label: this.$tc('topdata-es-synonym.columnCreatedAt'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnCreatedAt'),
                 allowResize: true,
                 sortable: true,
             }];
@@ -52,8 +52,8 @@ Component.register('topdata-es-synonym-list', {
         activeModalTitle() {
             if (!this.currentEntity) return '';
             return this.currentEntity.isNew()
-                ? this.$tc('topdata-es-synonym.modalTitleAdd')
-                : this.$tc('topdata-es-synonym.modalTitleEdit');
+                ? this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleAdd')
+                : this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleEdit');
         },
     },
 
@@ -115,7 +115,7 @@ Component.register('topdata-es-synonym-list', {
             this.isLoading = true;
             this.repository.save(this.currentEntity).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('topdata-es-synonym.saveSuccess'),
+                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.saveSuccess'),
                 });
                 this.onCloseModal();
             }).catch(() => {

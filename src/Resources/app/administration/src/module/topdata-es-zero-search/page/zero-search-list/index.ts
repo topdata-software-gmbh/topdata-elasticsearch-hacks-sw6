@@ -30,22 +30,22 @@ Component.register('topdata-es-zero-search-list', {
         columns() {
             return [{
                 property: 'term',
-                label: this.$tc('topdata-es-zero-search.columnTerm'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.columnTerm'),
                 allowResize: true,
                 primary: true,
             }, {
                 property: 'count',
-                label: this.$tc('topdata-es-zero-search.columnCount'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.columnCount'),
                 allowResize: true,
                 sortable: true,
             }, {
                 property: 'lastSearchedAt',
-                label: this.$tc('topdata-es-zero-search.columnLastSearchedAt'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.columnLastSearchedAt'),
                 allowResize: true,
                 sortable: true,
             }, {
                 property: 'createdAt',
-                label: this.$tc('topdata-es-zero-search.columnCreatedAt'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.columnCreatedAt'),
                 allowResize: true,
                 sortable: true,
             }];

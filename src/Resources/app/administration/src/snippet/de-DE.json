@@ -1,26 +1,28 @@
 {
-    "topdata-es-zero-search": {
-        "title": "Null-Suchergebnisse",
-        "description": "Verwaltung von Suchbegriffen ohne Ergebnisse",
-        "listTitle": "Suchbegriffe",
-        "columnTerm": "Suchbegriff",
-        "columnCount": "Anzahl",
-        "columnLastSearchedAt": "Zuletzt gesucht",
-        "columnCreatedAt": "Erstmals gesehen"
-    },
-    "topdata-es-synonym": {
-        "title": "Synonyme",
-        "description": "Verwaltung von Suchsynonymen für Elasticsearch",
-        "listTitle": "Suchsynonyme",
-        "columnTerm": "Suchbegriff (Term)",
-        "columnSynonyms": "Zugeordnete Synonyme (Komma-getrennt)",
-        "columnCreatedAt": "Erstellt am",
-        "buttonAdd": "Synonym hinzufügen",
-        "modalTitleAdd": "Neues Synonym erstellen",
-        "modalTitleEdit": "Synonym bearbeiten",
-        "labelTerm": "Suchbegriff (z.B. klopapier)",
-        "labelSynonyms": "Synonymgruppe (z.B. toilettenpapier, wc-papier)",
-        "placeholderSynonyms": "synonym1, synonym2, synonym3",
-        "saveSuccess": "Synonym erfolgreich gespeichert."
+    "TopdataElasticsearchHacksSW6": {
+        "topdata-es-zero-search": {
+            "title":                "Null-Suchergebnisse",
+            "description":          "Verwaltung von Suchbegriffen ohne Ergebnisse",
+            "listTitle":            "Suchbegriffe",
+            "columnTerm":           "Suchbegriff",
+            "columnCount":          "Anzahl",
+            "columnLastSearchedAt": "Zuletzt gesucht",
+            "columnCreatedAt":      "Erstmals gesehen"
+        },
+        "topdata-es-synonym":     {
+            "title":               "Synonyme",
+            "description":         "Verwaltung von Suchsynonymen für Elasticsearch",
+            "listTitle":           "Suchsynonyme",
+            "columnTerm":          "Suchbegriff (Term)",
+            "columnSynonyms":      "Zugeordnete Synonyme (Komma-getrennt)",
+            "columnCreatedAt":     "Erstellt am",
+            "buttonAdd":           "Synonym hinzufügen",
+            "modalTitleAdd":       "Neues Synonym erstellen",
+            "modalTitleEdit":      "Synonym bearbeiten",
+            "labelTerm":           "Suchbegriff (z.B. klopapier)",
+            "labelSynonyms":       "Synonymgruppe (z.B. toilettenpapier, wc-papier)",
+            "placeholderSynonyms": "synonym1, synonym2, synonym3",
+            "saveSuccess":         "Synonym erfolgreich gespeichert."
+        }
     }
 }

@@ -3,8 +3,8 @@ import './page/synonym-list';
 Shopware.Module.register('topdata-es-synonym', {
     type: 'plugin',
     name: 'Synonyms',
-    title: 'topdata-es-synonym.title',
-    description: 'topdata-es-synonym.description',
+    title: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.title',
+    description: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.description',
     color: '#189eff',
     icon: 'default-shopping-search',
 
@@ -20,7 +20,7 @@ Shopware.Module.register('topdata-es-synonym', {
 
     navigation: [{
         id: 'topdata-es-synonym-list',
-        label: 'topdata-es-synonym.listTitle',
+        label: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.listTitle',
         color: '#189eff',
         path: 'topdata.es.synonym.list',
         parent: 'topdata-es-zero-search',

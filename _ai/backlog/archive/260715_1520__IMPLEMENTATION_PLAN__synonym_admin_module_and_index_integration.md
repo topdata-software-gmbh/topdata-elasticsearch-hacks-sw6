@@ -344,12 +344,12 @@ Component.register('topdata-es-synonym-list', {
 <div class="topdata-es-synonym-list">
     <sw-page class="topdata-es-synonym-list-page">
         <template #smart-bar-header>
-            <h2>{{ $tc('topdata-es-synonym.title') }}</h2>
+            <h2>{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.title') }}</h2>
         </template>
 
         <template #smart-bar-actions>
             <sw-button variant="primary" @click="onAddSynonym">
-                {{ $tc('topdata-es-synonym.buttonAdd') }}
+                {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.buttonAdd') }}
             </sw-button>
         </template>
 
@@ -387,14 +387,14 @@ Component.register('topdata-es-synonym-list', {
                 <sw-text-field
                     v-model="currentEntity.term"
                     required
-                    :label="$tc('topdata-es-synonym.labelTerm')"
+                    :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelTerm')"
                 ></sw-text-field>
 
                 <sw-textarea-field
                     v-model="currentEntity.synonyms"
                     required
-                    :label="$tc('topdata-es-synonym.labelSynonyms')"
-                    :placeholder="$tc('topdata-es-synonym.placeholderSynonyms')"
+                    :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelSynonyms')"
+                    :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
                 ></sw-textarea-field>
 
                 <template #modal-footer>
@@ -438,17 +438,17 @@ Component.register('topdata-es-synonym-list', {
         columns() {
             return [{
                 property: 'term',
-                label: this.$tc('topdata-es-synonym.columnTerm'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnTerm'),
                 allowResize: true,
                 primary: true,
                 sortable: true,
             }, {
                 property: 'synonyms',
-                label: this.$tc('topdata-es-synonym.columnSynonyms'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnSynonyms'),
                 allowResize: true,
             }, {
                 property: 'createdAt',
-                label: this.$tc('topdata-es-synonym.columnCreatedAt'),
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnCreatedAt'),
                 allowResize: true,
                 sortable: true,
             }];
@@ -457,8 +457,8 @@ Component.register('topdata-es-synonym-list', {
         activeModalTitle() {
             if (!this.currentEntity) return '';
             return this.currentEntity.isNew()
-                ? this.$tc('topdata-es-synonym.modalTitleAdd')
-                : this.$tc('topdata-es-synonym.modalTitleEdit');
+                ? this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleAdd')
+                : this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleEdit');
         },
     },
 
@@ -504,7 +504,7 @@ Component.register('topdata-es-synonym-list', {
             this.isLoading = true;
             this.repository.save(this.currentEntity).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('topdata-es-synonym.saveSuccess'),
+                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.saveSuccess'),
                 });
                 this.onCloseModal();
             }).catch(() => {
@@ -537,8 +537,8 @@ import './page/synonym-list';
 Shopware.Module.register('topdata-es-synonym', {
     type: 'plugin',
     name: 'Synonyms',
-    title: 'topdata-es-synonym.title',
-    description: 'topdata-es-synonym.description',
+    title: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.title',
+    description: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.description',
     color: '#189eff',
     icon: 'default-shopping-search',
 
@@ -554,7 +554,7 @@ Shopware.Module.register('topdata-es-synonym', {
 
     navigation: [{
         id: 'topdata-es-synonym-list',
-        label: 'topdata-es-synonym.listTitle',
+        label: 'TopdataElasticsearchHacksSW6.topdata-es-synonym.listTitle',
         color: '#189eff',
         path: 'topdata.es.synonym.list',
         parent: 'topdata-es-zero-search', // Nest under Zero Search parent menu item
