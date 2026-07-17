@@ -42,9 +42,9 @@
                                             </div>
                                             <h5 class="card-title">{{ category.translated.name }}</h5>
                                             {% set breadcrumb = category.translated.breadcrumb ?: [] %}
-                                            {% if breadcrumb|length > 1 %}
+                                            {% if breadcrumb|length > 2 %}
                                                 <p class="card-text text-muted small">
-                                                    {{ breadcrumb|slice(0, -1)|join(' > ')|sw_sanitize }}
+                                                    {{ breadcrumb|slice(1)|slice(0, -1)|join(' > ')|sw_sanitize }}
                                                 </p>
                                             {% endif %}
                                         </div>
