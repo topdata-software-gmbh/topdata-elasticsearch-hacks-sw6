@@ -3,7 +3,8 @@ filename: "_ai/backlog/active/260717_1320__IMPLEMENTATION_PLAN__strip-leading-ze
 title: "Strip Leading Zeros from Product Number in Elasticsearch Search"
 createdAt: 2026-07-17 13:20
 updatedAt: 2026-07-17 13:20
-status: draft
+status: completed
+completedAt: 2026-07-17 16:48
 priority: high
 tags: [shopware6, elasticsearch, product-number, search, leading-zeros]
 estimatedComplexity: simple

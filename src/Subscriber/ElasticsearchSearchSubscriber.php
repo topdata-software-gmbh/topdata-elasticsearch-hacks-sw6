@@ -17,12 +17,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * elevate products matching the search term in specific fields.
  *
  * Boost priority (highest to lowest):
- *   1. productNumber exact    (2,000,000) — product number equals the term exactly
- *   2. name match_phrase       (1,000,000) — exact phrase match in analyzed name
- *   3. name match AND          (  500,000) — all tokens present in analyzed name
- *   4. name delimiter AND      (  200,000) — all tokens present in delimiter-analyzed name
- *   5. name wildcard           (   15,000) — substring match in raw keyword name
- *   6. name prefix             (    1,100) — prefix match in raw keyword name
+ *   1. productNumber exact              (2,000,000) — product number equals the term exactly
+ *   1b.productNumber stripped exact     (1,500,000) — exact match on leading-zero-stripped digits (e.g. "4000" for "004000")
+ *   2. name match_phrase                 (1,000,000) — exact phrase match in analyzed name
+ *   3. name match AND                    (  500,000) — all tokens present in analyzed name
+ *   4. name delimiter AND                (  200,000) — all tokens present in delimiter-analyzed name
+ *   5. name wildcard                     (   15,000) — substring match in raw keyword name
+ *   6. name prefix                       (    1,100) — prefix match in raw keyword name
  *
  * Product-number boosts are intentionally higher than name-field boosts so that
  * a product whose article number exactly matches the search term always
@@ -30,6 +31,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * critical for B2B / industrial catalogues where users often search by article
  * number. A TermQuery is used (not WildcardQuery/PrefixQuery) to avoid false
  * positives: searching for "4000" must not match "40001" or "4000WD/F".
+ * For purely numeric searches, leading zeros are stripped in PHP and a suffix
+ * WildcardQuery is added so that "4000" also finds products with article
+ * number "004000".
  */
 class ElasticsearchSearchSubscriber implements EventSubscriberInterface
 {
@@ -111,11 +115,52 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
         // TermQuery is a term-level Lucene query: it produces a constant score
         // inherently (no tf/idf, no field-length normalisation), so wrapping
         // it in ConstantScoreQuery is unnecessary.
+        //
+        // Leading-zero matching (e.g. "004000" → SKU "4000") is handled in
+        // two layers:
+        //   1. Matching: `ProductElasticsearchDefinitionDecorator::buildTermQuery`
+        //      wraps the original term query AND a `TermQuery` on
+        //      `productNumber` for the stripped value in a `bool.should` with
+        //      `minimum_should_match: 1`. This makes the document MATCH the
+        //      MUST clause if EITHER the original search OR the exact stripped
+        //      SKU matches — without this wrapper, a `SHOULD` clause below can
+        //      only raise the score of documents the base query already
+        //      returned, so the stripped-SKU product would never appear.
+        //   2. Ranking: here in `ElasticsearchSearchSubscriber`, we add a
+        //      second `TermQuery` for the stripped value with a high boost
+        //      (1.5M) as a SHOULD clause to push the matched product to the
+        //      top of the results.
 
         $search->addQuery(
             new TermQuery('productNumber', $lowerTerm, ['boost' => 2_000_000.0]),
             BoolQuery::SHOULD
         );
+
+        // ---- Leading-zero TermQuery: for purely numeric terms, strip leading
+        //      zeros and add a second TermQuery for the stripped value. This
+        //      makes the search bidirectional:
+        //        "4000"   → also matches SKU "004000"
+        //        "004000" → also matches SKU "4000"
+        //      Without this, only the exact TermQuery above fires, so searching
+        //      "004000" would miss SKU "4000" (they are different keyword values).
+        //      A WildcardQuery is NOT used here because a suffix wildcard `*4000`
+        //      would match "40001" (false positive), and as a SHOULD clause it
+        //      cannot help a document that fails the base query's MUST clause.
+        //      The TermQuery is the most precise tool: it only matches documents
+        //      whose productNumber exactly equals the stripped value.
+        //
+        //      Only fires when ctype_digit is true (pure numeric strings) and
+        //      the stripped value differs from the original (avoid redundant
+        //      duplicate of the TermQuery above).
+        if (ctype_digit($lowerTerm)) {
+            $stripped = ltrim($lowerTerm, '0');
+            if ($stripped !== '' && $stripped !== $lowerTerm) {
+                $search->addQuery(
+                    new TermQuery('productNumber', $stripped, ['boost' => 1_500_000.0]),
+                    BoolQuery::SHOULD
+                );
+            }
+        }
 
         // ─────────────────────────────────────────────────────────────────────
         // Name-field boost queries (language-specific)
