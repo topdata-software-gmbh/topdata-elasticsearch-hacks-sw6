@@ -7,6 +7,7 @@ use OpenSearchDSL\Query\Compound\ConstantScoreQuery;
 use OpenSearchDSL\Query\FullText\MatchPhraseQuery;
 use OpenSearchDSL\Query\FullText\MatchQuery;
 use OpenSearchDSL\Query\TermLevel\PrefixQuery;
+use OpenSearchDSL\Query\TermLevel\TermQuery;
 use OpenSearchDSL\Query\TermLevel\WildcardQuery;
 use Shopware\Elasticsearch\Framework\DataAbstractionLayer\Event\ElasticsearchEntitySearcherSearchEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -16,18 +17,19 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * elevate products matching the search term in specific fields.
  *
  * Boost priority (highest to lowest):
- *   1. productNumber wildcard  (2,000,000) — product number contains the term
- *   2. productNumber prefix    (1,800,000) — product number starts with the term
- *   3. name match_phrase       (1,000,000) — exact phrase match in analyzed name
- *   4. name match AND          (  500,000) — all tokens present in analyzed name
- *   5. name delimiter AND      (  200,000) — all tokens present in delimiter-analyzed name
- *   6. name wildcard           (   15,000) — substring match in raw keyword name
- *   7. name prefix             (    1,100) — prefix match in raw keyword name
+ *   1. productNumber exact    (2,000,000) — product number equals the term exactly
+ *   2. name match_phrase       (1,000,000) — exact phrase match in analyzed name
+ *   3. name match AND          (  500,000) — all tokens present in analyzed name
+ *   4. name delimiter AND      (  200,000) — all tokens present in delimiter-analyzed name
+ *   5. name wildcard           (   15,000) — substring match in raw keyword name
+ *   6. name prefix             (    1,100) — prefix match in raw keyword name
  *
  * Product-number boosts are intentionally higher than name-field boosts so that
- * a product whose article number contains the search term always outranks one
- * that merely has the term somewhere in its display name. This is critical for
- * B2B / industrial catalogues where users often search by article number.
+ * a product whose article number exactly matches the search term always
+ * outranks one that merely has the term somewhere in its display name. This is
+ * critical for B2B / industrial catalogues where users often search by article
+ * number. A TermQuery is used (not WildcardQuery/PrefixQuery) to avoid false
+ * positives: searching for "4000" must not match "40001" or "4000WD/F".
  */
 class ElasticsearchSearchSubscriber implements EventSubscriberInterface
 {
@@ -49,8 +51,8 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
      * individual tokens), so documents that do NOT match any of our boost
      * clauses can still be returned — they simply miss the additive score.
      *
-     * WildcardQuery and PrefixQuery are term-level Lucene queries that
-     * inherently produce a constant score (no tf/idf or field-length
+     * TermQuery, WildcardQuery and PrefixQuery are term-level Lucene queries
+     * that inherently produce a constant score (no tf/idf or field-length
      * normalisation), so they are used directly with a boost.
      *
      * For analysed name-field queries (match_phrase, match), a
@@ -81,44 +83,37 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
         $languageIdChain = $event->getContext()->getLanguageIdChain();
 
         // ─────────────────────────────────────────────────────────────────────
-        // Product-number boost queries (language-agnostic, highest priority)
+        // Product-number boost query (language-agnostic, highest priority)
         // ─────────────────────────────────────────────────────────────────────
         //
         // A customer searching for "4000" expects the product whose article
-        // number IS "4000WD/F" to appear FIRST — ahead of a product that merely
-        // has "4000 mAh" somewhere in its name (e.g. "Scosche magicPACK
-        // Powerbank 4000 mAh"). Without these queries, the product-number match
-        // only receives Shopware's base ranking weight (~1000) from the
-        // `productNumber.search` field, while a name match can collect 1M+500K
-        // from match_phrase/match AND boosts and easily outrank it.
+        // number is EXACTLY "4000" to appear FIRST — ahead of a product that
+        // merely has "4000 mAh" somewhere in its name (e.g. "Scosche magicPACK
+        // Powerbank 4000 mAh") or whose article number only starts with or
+        // contains "4000" (e.g. "40001", "4000WD/F"). Without this query, the
+        // exact product-number match only receives Shopware's base ranking weight
+        // (~1000) from the `productNumber.search` field, while a name match can
+        // collect 1M+500K from match_phrase/match AND boosts and easily outrank
+        // it.
         //
-        // These boosts are placed OUTSIDE the language-ID loop because
+        // A TermQuery on the `productNumber` keyword field is used (not
+        // WildcardQuery or PrefixQuery) to enforce an EXACT match. The keyword
+        // field uses `sw_lowercase_normalizer`, so the comparison is
+        // case-insensitive but the entire value must be identical. This avoids
+        // false positives: searching "4000" must NOT match "40001" (different
+        // article number) or "4000WD/F" (different article number).
+        //
+        // This boost is placed OUTSIDE the language-ID loop because
         // `productNumber` is not translated — it is the same value across all
-        // languages. Adding them inside the loop would redundantly duplicate
-        // the same query N times (once per language).
+        // languages. Adding it inside the loop would redundantly duplicate the
+        // query N times (once per language).
         //
-        // Wildcard and Prefix queries are term-level in Lucene: they produce a
-        // constant score inherently (no tf/idf, no field-length normalisation),
-        // so wrapping them in ConstantScoreQuery is unnecessary.
-        //
-        // WildcardQuery *{term}* : catches any product number that contains the
-        //   search term as a substring (e.g. "4000" matches "COLOP 4000WD/F"
-        //   and also "PWR-4000-XL"). Boost 2,000,000.
-        //
-        // PrefixQuery  {term}*  : additional boost for product numbers that
-        //   START with the search term (e.g. "4000" matches "4000WD/F" but NOT
-        //   "PWR-4000"). Boost 1,800,000 — slightly lower than the wildcard so
-        //   that a leading-digit match that gets BOTH boosts (2M + 1.8M = 3.8M)
-        //   has a modest edge over a contains-only match (2M), which is
-        //   desirable but not overwhelming.
+        // TermQuery is a term-level Lucene query: it produces a constant score
+        // inherently (no tf/idf, no field-length normalisation), so wrapping
+        // it in ConstantScoreQuery is unnecessary.
 
         $search->addQuery(
-            new WildcardQuery('productNumber', sprintf('*%s*', $lowerTerm), ['boost' => 2_000_000.0]),
-            BoolQuery::SHOULD
-        );
-
-        $search->addQuery(
-            new PrefixQuery('productNumber', $lowerTerm, ['boost' => 1_800_000.0]),
+            new TermQuery('productNumber', $lowerTerm, ['boost' => 2_000_000.0]),
             BoolQuery::SHOULD
         );
 
