@@ -77,7 +77,12 @@ Admin API: `GET /api/_action/topdata-elasticsearch-hacks-sw6/zero-results/export
 
 ## Configuration
 
-`src/Resources/config/config.xml` — `excludedCategories` (sw-entity-multi-id-select for categories).
+`src/Resources/config/config.xml`:
+
+| Key | Type | Default | Purpose |
+|-----|------|---------|---------|
+| `excludedCategories` | sw-entity-multi-id-select | — | Categories excluded from product search |
+| `categorySuggestLayout` | sw-single-select (`above`/`left`) | `above` | Layout of category results in search suggest dropdown |
 
 ## Routes
 

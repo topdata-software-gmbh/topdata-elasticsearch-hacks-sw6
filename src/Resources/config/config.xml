@@ -14,4 +14,29 @@
             <helpText lang="de-DE">Produkte, die diesen Kategorien zugeordnet sind, werden nicht über die Storefront-Suche gefunden.</helpText>
         </component>
     </card>
+    <card>
+        <title>Category Suggest</title>
+        <title lang="de-DE">Kategorie-Vorschläge</title>
+
+        <component name="sw-single-select">
+            <name>categorySuggestLayout</name>
+            <label>Category display layout in search suggest</label>
+            <label lang="de-DE">Anzeige-Layout der Kategorien in der Suchvorschau</label>
+            <helpText>Choose whether matching categories appear above products or to the left side.</helpText>
+            <helpText lang="de-DE">Wählen Sie, ob passende Kategorien über den Produkten oder links daneben angezeigt werden.</helpText>
+            <options>
+                <option>
+                    <id>above</id>
+                    <name>Above products</name>
+                    <name lang="de-DE">Über den Produkten</name>
+                </option>
+                <option>
+                    <id>left</id>
+                    <name>Left of products</name>
+                    <name lang="de-DE">Links neben den Produkten</name>
+                </option>
+            </options>
+            <defaultValue>above</defaultValue>
+        </component>
+    </card>
 </config>

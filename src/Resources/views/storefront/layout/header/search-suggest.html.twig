@@ -1,21 +1,53 @@
 {% sw_extends '@Storefront/storefront/layout/header/search-suggest.html.twig' %}
 
+{% set tdbsCategoryLayout = config('TopdataElasticsearchHacksSW6.config.categorySuggestLayout') ?: 'above' %}
+
 {% block layout_search_suggest %}
-    <style>
-        .search-suggest-container-categories .suggest-title {
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6c757d;
-            padding: 0.5rem 1rem;
-            border-bottom: 1px solid #dee2e6;
-            cursor: default;
-        }
-        .search-suggest-container-categories .suggest-title:hover {
-            background-color: transparent;
-        }
-    </style>
+    {% if page.extensions and page.extensions.topdata_category_suggest and page.extensions.topdata_category_suggest.categories|length > 0 %}
+        <style>
+            {% if tdbsCategoryLayout == 'above' %}
+                .search-suggest:has(.search-suggest-container-categories) {
+                    display: block !important;
+                    min-width: auto !important;
+                }
+                .search-suggest:has(.search-suggest-container-categories) .search-suggest-container {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    border-right: none !important;
+                    padding-right: 0 !important;
+                    margin-right: 0 !important;
+                    flex: none !important;
+                }
+            {% else %}
+                @media (min-width: 800px) {
+                    .search-suggest:has(.search-suggest-container-categories) {
+                        display: flex !important;
+                    }
+                    .search-suggest-container-categories {
+                        padding-right: 10px;
+                        margin-right: 10px;
+                        border-right: 1px solid #bcc1c7;
+                        max-width: 30%;
+                        flex: 0 0 30% !important;
+                        width: auto !important;
+                    }
+                    .search-suggest:has(.search-suggest-container-categories) .search-suggest-container:not(.search-suggest-container-categories) {
+                        flex: 1 1 auto !important;
+                        width: 0 !important;
+                        max-width: none !important;
+                    }
+                }
+            {% endif %}
+            .search-suggest-container-categories .suggest-title {
+                font-weight: bold;
+                padding: 0.75rem 0;
+                cursor: default;
+            }
+            .search-suggest-container-categories .suggest-title:hover {
+                background-color: transparent;
+            }
+        </style>
+    {% endif %}
     {{ parent() }}
 {% endblock %}
 
@@ -85,14 +117,5 @@
         {% endif %}
     {% endif %}
 
-    {{ parent() }}
-{% endblock %}
-
-{% block layout_search_suggest_results %}
-    {% if page.extensions and page.extensions.topdata_category_suggest and page.extensions.topdata_category_suggest.categories|length > 0 %}
-        <li class="search-suggest-product js-result suggest-title">
-            {{ 'TopdataElasticsearchHacksSW6.search.titleProducts'|trans }}
-        </li>
-    {% endif %}
     {{ parent() }}
 {% endblock %}
