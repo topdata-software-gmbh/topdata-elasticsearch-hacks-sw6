@@ -79,8 +79,10 @@ use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -148,7 +150,7 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
         ]);
 
         if ($rootIds !== []) {
-            $rootFilter = new \Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter();
+            $rootFilter = new OrFilter();
             foreach ($rootIds as $rootId) {
                 $rootFilter->addQuery(new EqualsFilter('id', $rootId));
                 $rootFilter->addQuery(new ContainsFilter('path', '|' . $rootId . '|'));
@@ -162,7 +164,7 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->getPage()->addExtension('topdata_category_suggest', new \Shopware\Core\Framework\Struct\ArrayEntity([
+        $event->getPage()->addExtension('topdata_category_suggest', new ArrayEntity([
             'categories' => $categories->getEntities(),
             'total' => $categories->getTotal(),
         ]));
@@ -179,8 +181,8 @@ Add the following service definition before the closing `</services>` tag:
 ```xml
         <!-- Category Suggest Subscriber (adds category results to search dropdown) -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\CategorySuggestSubscriber">
-            <argument type="service" key="$categoryRepository" id="sales_channel.category.repository"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="sales_channel.category.repository" key="$categoryRepository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" key="$systemConfigService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 ```
