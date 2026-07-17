@@ -3,7 +3,9 @@
         "search": {
             "titleCategories": "Kategorien",
             "titleProducts": "Produkte",
-            "categoryResultsLink": "Alle Kategorie-Ergebnisse anzeigen"
+            "categoryResultsLink": "Alle Kategorie-Ergebnisse anzeigen",
+            "categoryResultsHeadline": "%count% Kategorie-Ergebnisse f\u00fcr \"%searchTerm%\"",
+            "noCategoryResults": "Keine Kategorien gefunden"
         }
     }
 }

@@ -102,11 +102,31 @@
             </call>
         </service>
 
-        <!-- Category Suggest Subscriber (adds category results to search dropdown) -->
-        <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\CategorySuggestSubscriber">
+        <!-- Category Search Service (shared logic for suggest and full page) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Service\CategorySearchService">
             <argument type="service" id="sales_channel.category.repository" key="$categoryRepository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" key="$systemConfigService"/>
+        </service>
+
+        <!-- Category Suggest Subscriber (adds category results to search dropdown) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\CategorySuggestSubscriber">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\CategorySearchService" key="$categorySearchService"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Category Search Page Loader (full page of category search results) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Page\CategorySearch\CategorySearchPageLoader">
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader" key="$genericLoader"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\CategorySearchService" key="$categorySearchService"/>
+            <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface" key="$eventDispatcher"/>
+        </service>
+
+        <!-- Category Search Controller -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Controller\CategorySearchController" public="true">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Page\CategorySearch\CategorySearchPageLoader" key="$categorySearchPageLoader"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>

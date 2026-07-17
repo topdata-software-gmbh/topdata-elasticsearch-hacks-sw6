@@ -1,0 +1,64 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_head %}
+    {% sw_include '@Storefront/storefront/page/search/meta.html.twig' %}
+{% endblock %}
+
+{% block base_content %}
+    {% block page_category_search %}
+        <div class="cms-page category-search-page">
+            {% block page_category_search_headline %}
+                <h1 class="search-headline text-center mb-4">
+                    {{ 'TopdataElasticsearchHacksSW6.search.categoryResultsHeadline'|trans({
+                        '%count%': page.total,
+                        '%searchTerm%': page.searchTerm,
+                    }) }}
+                </h1>
+            {% endblock %}
+
+            {% block page_category_search_results %}
+                {% if page.categories|length > 0 %}
+                    <div class="row">
+                        {% for category in page.categories %}
+                            {% block page_category_search_item %}
+                                <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
+                                    <a href="{{ seoUrl('frontend.navigation.page', {navigationId: category.id}) }}"
+                                       title="{{ category.translated.name }}"
+                                       class="card category-card h-100 text-decoration-none">
+                                        <div class="card-body text-center">
+                                            <div class="category-card-image mb-3">
+                                                {% if category.media and category.media.url %}
+                                                    {% sw_thumbnails 'category-search-image-thumbnails' with {
+                                                        media: category.media,
+                                                        sizes: { 'default': '200px' },
+                                                        attributes: {
+                                                            'class': 'img-fluid',
+                                                            'alt': category.translated.name,
+                                                        }
+                                                    } %}
+                                                {% else %}
+                                                    {% sw_icon 'folder' style { 'size': 'lg' } %}
+                                                {% endif %}
+                                            </div>
+                                            <h5 class="card-title">{{ category.translated.name }}</h5>
+                                            {% set breadcrumb = category.translated.breadcrumb ?: [] %}
+                                            {% if breadcrumb|length > 1 %}
+                                                <p class="card-text text-muted small">
+                                                    {{ breadcrumb|slice(0, -1)|join(' > ')|sw_sanitize }}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endblock %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="search-suggest-no-result text-center">
+                        {{ 'TopdataElasticsearchHacksSW6.search.noCategoryResults'|trans }}
+                    </div>
+                {% endif %}
+            {% endblock %}
+        </div>
+    {% endblock %}
+{% endblock %}
