@@ -12,7 +12,7 @@
 
         <template #content>
             <sw-entity-listing
-                :dataSource="items"
+                ref="listing"
                 :columns="columns"
                 :repository="repository"
                 identifier="topdata-es-synonym"
@@ -23,11 +23,7 @@
                 :allow-delete="true"
                 :allow-inline-edit="false"
                 :full-page="true"
-                :sort-by="sortBy"
-                :sort-direction="sortDirection"
                 :is-loading="isLoading"
-                @page-change="onPageChange"
-                @column-sort="onSortColumn"
                 @edit="onEditSynonym"
             >
                 <template #column-createdAt="{ item }">

@@ -1,7 +1,6 @@
 import template from './synonym-list.html.twig';
 
 const { Component, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
 
 Component.register('topdata-es-synonym-list', {
     template,
@@ -15,11 +14,7 @@ Component.register('topdata-es-synonym-list', {
 
     data() {
         return {
-            items: null,
             isLoading: true,
-            sortBy: 'term',
-            sortDirection: 'ASC',
-            limit: 25,
             activeModal: false,
             currentEntity: null,
         };
@@ -57,26 +52,7 @@ Component.register('topdata-es-synonym-list', {
         },
     },
 
-    mounted() {
-        this.getList();
-    },
-
     methods: {
-        getList() {
-            console.log('getList');
-            this.isLoading = true;
-
-            const criteria = new Criteria(this.page, this.limit);
-            criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection));
-
-            this.repository.search(criteria).then((result) => {
-                this.total = result.total;
-                this.items = result;
-                this.isLoading = false;
-            }).catch(() => {
-                this.isLoading = false;
-            });
-        },
 
         onAddSynonym() {
             this.currentEntity = this.repository.create();
@@ -93,7 +69,7 @@ Component.register('topdata-es-synonym-list', {
         onCloseModal() {
             this.activeModal = false;
             this.currentEntity = null;
-            this.getList();
+            this.$refs.listing?.getList();
         },
 
         onSaveSynonym() {
@@ -110,18 +86,6 @@ Component.register('topdata-es-synonym-list', {
             }).catch(() => {
                 this.isLoading = false;
             });
-        },
-
-        onPageChange(params) {
-            this.page = params.page;
-            this.limit = params.limit;
-            this.getList();
-        },
-
-        onSortColumn(column) {
-            this.sortBy = column.dataIndex ?? column.property;
-            this.sortDirection = column.sortDirection ?? 'ASC';
-            this.getList();
         },
     },
 });
