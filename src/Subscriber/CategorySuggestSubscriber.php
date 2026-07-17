@@ -2,6 +2,7 @@
 
 namespace Topdata\TopdataElasticsearchHacksSW6\Subscriber;
 
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -10,7 +11,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\ArrayEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Suggest\SuggestPageLoadedEvent;
@@ -42,18 +42,17 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
         $salesChannelContext = $event->getSalesChannelContext();
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
 
-        $limit = (int) $this->systemConfigService->get(
+        $displayLimit = (int) $this->systemConfigService->get(
             'TopdataElasticsearchHacksSW6.config.categorySuggestLimit',
             $salesChannelId
         ) ?: 8;
 
         $criteria = new Criteria();
-        $criteria->setLimit($limit);
+        $criteria->setLimit(50);
         $criteria->addFilter(new ContainsFilter('name', $term));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('visible', true));
         $criteria->addFilter(new EqualsFilter('type', CategoryDefinition::TYPE_PAGE));
-        $criteria->addSorting(new FieldSorting('level', FieldSorting::ASCENDING));
         $criteria->addAssociations(['media', 'seoUrls']);
 
         $excludedCategories = $this->systemConfigService->get(
@@ -94,8 +93,18 @@ class CategorySuggestSubscriber implements EventSubscriberInterface
         $entities = $categories->getEntities();
         $entities->sort(fn ($a, $b) => $this->sortByRelevance($a, $b, $term));
 
+        $trimmed = new CategoryCollection();
+        $i = 0;
+        foreach ($entities as $entity) {
+            if ($i >= $displayLimit) {
+                break;
+            }
+            $trimmed->add($entity);
+            $i++;
+        }
+
         $event->getPage()->addExtension('topdata_category_suggest', new ArrayEntity([
-            'categories' => $entities,
+            'categories' => $trimmed,
             'total' => $categories->getTotal(),
         ]));
     }
