@@ -356,7 +356,7 @@ Component.register('topdata-es-synonym-list', {
         <template #content>
             <sw-entity-listing
                 v-if="items"
-                :items="items"
+                :dataSource="items"
                 :columns="columns"
                 :repository="repository"
                 :criteria-limit="limit"

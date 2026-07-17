@@ -1,0 +1,67 @@
+<div class="topdata-es-synonym-list">
+    <sw-page class="topdata-es-synonym-list-page">
+        <template #smart-bar-header>
+            <h2>{{ $tc('topdata-es-synonym.title') }}</h2>
+        </template>
+
+        <template #smart-bar-actions>
+            <sw-button variant="primary" @click="onAddSynonym">
+                {{ $tc('topdata-es-synonym.buttonAdd') }}
+            </sw-button>
+        </template>
+
+        <template #content>
+            <sw-entity-listing
+                :dataSource="items"
+                :columns="columns"
+                :repository="repository"
+                identifier="topdata-es-synonym"
+                :show-settings="true"
+                :show-selection="false"
+                :allow-view="false"
+                :allow-edit="true"
+                :allow-delete="true"
+                :allow-inline-edit="false"
+                :full-page="true"
+                :sort-by="sortBy"
+                :sort-direction="sortDirection"
+                :is-loading="isLoading"
+                @page-change="onPageChange"
+                @column-sort="onSortColumn"
+                @edit="onEditSynonym"
+            >
+                <template #column-createdAt="{ item }">
+                    <sw-time-ago :date="item.createdAt" :date-time-format="{ month: '2-digit', day: '2-digit' }" />
+                </template>
+            </sw-entity-listing>
+
+            <sw-modal
+                v-if="activeModal"
+                :title="activeModalTitle"
+                @modal-close="onCloseModal"
+            >
+                <sw-text-field
+                    v-model="currentEntity.term"
+                    required
+                    :label="$tc('topdata-es-synonym.labelTerm')"
+                ></sw-text-field>
+
+                <sw-textarea-field
+                    v-model="currentEntity.synonyms"
+                    required
+                    :label="$tc('topdata-es-synonym.labelSynonyms')"
+                    :placeholder="$tc('topdata-es-synonym.placeholderSynonyms')"
+                ></sw-textarea-field>
+
+                <template #modal-footer>
+                    <sw-button size="small" @click="onCloseModal">
+                        {{ $tc('global.default.cancel') }}
+                    </sw-button>
+                    <sw-button variant="primary" size="small" @click="onSaveSynonym">
+                        {{ $tc('global.default.save') }}
+                    </sw-button>
+                </template>
+            </sw-modal>
+        </template>
+    </sw-page>
+</div>

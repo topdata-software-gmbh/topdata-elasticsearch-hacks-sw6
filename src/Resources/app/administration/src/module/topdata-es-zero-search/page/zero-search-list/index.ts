@@ -1,47 +1,10 @@
+import template from './zero-search-list.html.twig';
+
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Component.register('topdata-es-zero-search-list', {
-    template: `
-
-<div class="topdata-es-zero-search-list">
-    <sw-page class="topdata-es-zero-search-list-page">
-        <template #smart-bar-header>
-            <h2>{{ $tc('topdata-es-zero-search.title') }}</h2>
-        </template>
-
-        <template #content>
-            <sw-entity-listing
-                v-if="items"
-                :data-source="items"
-                :columns="columns"
-                :repository="repository"
-                :criteria-limit="limit"
-                :show-settings="true"
-                :show-selection="false"
-                :allow-view="false"
-                :allow-edit="false"
-                :allow-delete="true"
-                :allow-inline-edit="false"
-                :full-page="true"
-                :sort-by="sortBy"
-                :sort-direction="sortDirection"
-                :is-loading="isLoading"
-                @page-change="onPageChange"
-                @column-sort="onSortColumn"
-            >
-                <template #column-lastSearchedAt="{ item }">
-                    {{ item.lastSearchedAt | date(true) }}
-                </template>
-
-                <template #column-createdAt="{ item }">
-                    {{ item.createdAt | date(true) }}
-                </template>
-            </sw-entity-listing>
-        </template>
-    </sw-page>
-</div>
-    `,
+    template,
 
     inject: ['repositoryFactory'],
 
@@ -89,6 +52,10 @@ Component.register('topdata-es-zero-search-list', {
         },
     },
 
+    mounted() {
+        this.getList();
+    },
+
     methods: {
         getList() {
             this.isLoading = true;
@@ -96,11 +63,27 @@ Component.register('topdata-es-zero-search-list', {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection));
 
+            console.log('[zero-search-list] getList() called', {
+                page: this.page,
+                limit: this.limit,
+                sortBy: this.sortBy,
+                sortDirection: this.sortDirection,
+                criteria,
+            });
+
             this.repository.search(criteria).then((result) => {
+                console.log('[zero-search-list] search SUCCESS', {
+                    total: result.total,
+                    length: result.length,
+                    firstItem: result[0] || null,
+                    resultType: typeof result,
+                    result,
+                });
                 this.total = result.total;
                 this.items = result;
                 this.isLoading = false;
-            }).catch(() => {
+            }).catch((error) => {
+                console.error('[zero-search-list] search FAILED', error);
                 this.isLoading = false;
             });
         },
