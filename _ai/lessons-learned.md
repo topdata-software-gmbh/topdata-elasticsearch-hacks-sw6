@@ -79,3 +79,68 @@ The event triggering order in `ElasticsearchEntitySearcher::search`:
 - **`ConstantScoreQuery` for fixed boosts:** If all documents matching a clause should get the same score boost (regardless of field length), wrap the clause in `ConstantScoreQuery { filter: clause, boost: N }`. This is critical when there are competing matches with varying field lengths.
 - **Score magnitude budget:** Shopware's product search config `ranking` values are stored in `product_search_config_field` and passed to `SearchFieldConfig`. They become the `boost` parameter on `DisMaxQuery`, weighting each field's contribution. Typical values range from ~500 to 10,000. Custom boost clauses must out-rank these to reliably reorder results.
 - **DB table consistency:** Shopware 6.7 entity definitions auto-add `UpdatedAtField` even if not defined in the entity class. Ensure `updated_at` column exists (e.g., via migration) to avoid DAL query failures.
+
+## [2026-07-17] - Product Number Search Boosting & Leading-Zero Matching
+
+### Context
+Implement two related features in `ElasticsearchSearchSubscriber` and `ProductElasticsearchDefinitionDecorator`:
+1. Boost product-number exact matches above name-only matches in search results
+2. Make searching "004000" find a product with SKU "4000" (leading-zero stripping)
+
+### Challenge 1: WildcardQuery False Positives on Product Number
+An initial implementation used `WildcardQuery('productNumber', '*4000*')` (boost 2M) and `PrefixQuery('productNumber', '4000')` (boost 1.8M) to catch any product number containing the search term.
+
+- **Problem:** Searching "4000" returned the correct product first, but the second result was a product with SKU "40001" — a different article number that merely contains "4000" as a substring. The wildcard `*4000*` was too broad.
+- **Fix:** Replaced both WildcardQuery and PrefixQuery with a single `TermQuery('productNumber', '4000', ['boost' => 2_000_000.0])`. A `TermQuery` on the keyword field (which uses `sw_lowercase_normalizer`) performs an exact, case-insensitive but whole-value match. SKU "40001" no longer matches.
+
+- **Lesson:** `WildcardQuery` with `*term*` on a keyword field matches ANY product number containing the term as a substring — including completely different article numbers. For exact SKU matching, use `TermQuery` on the keyword field.
+- **Lesson:** The `productNumber` field is a keyword field with `sw_lowercase_normalizer`, so `TermQuery` comparisons are case-insensitive but require the entire value to match exactly.
+
+### Challenge 2: SHOULD Clauses Cannot Add Documents Missing from the MUST Clause
+The leading-zero stripping feature (`ltrim($term, '0')`) added a `TermQuery` for the stripped value as a `SHOULD` clause in `ElasticsearchSearchSubscriber`, expecting searching "004000" would boost the product with SKU "4000".
+
+- **Problem:** Searching "004000" did **not** return the product with SKU "4000" at all. The `SHOULD` clause could only boost documents that the `MUST` clause (Shopware's base `query_string` query) already returned. When the base query analyzed "004000" to token `["004000"]`, it didn't match the `productNumber.search` token `["4000"]`, so the product with SKU "4000" never entered the result set. The `SHOULD` boost was completely useless — it had no document to score.
+
+  This was not immediately obvious; the WildcardQuery variant (`*4000`) also failed for the same reason. Even when both a TermQuery and a WildcardQuery SHOULD boost were added, neither helped because the document wasn't returned by the MUST clause.
+
+- **Fix:** Modified `ProductElasticsearchDefinitionDecorator::buildTermQuery()` — the method whose return value becomes the **MUST clause** (via `ElasticsearchHelper::addTerm` → `$search->addQuery($query)` which defaults to `MUST`). For purely numeric terms with leading zeros, wrap the original term query and a `TermQuery('productNumber', $stripped)` in a `BoolQuery` with both as `SHOULD` and `minimum_should_match: 1`:
+
+  ```php
+  $wrapper = new BoolQuery();
+  $wrapper->add($query, BoolQuery::SHOULD);
+  $wrapper->add(new TermQuery('productNumber', $stripped), BoolQuery::SHOULD);
+  $wrapper->addParameter('minimum_should_match', 1);
+  return $wrapper;
+  ```
+
+  Since this `BoolQuery` is placed in the `MUST` clause, a document now matches if EITHER the original Shopware query OR the exact stripped-SKU `TermQuery` matches. The document enters the result set via the `TermQuery`, and the `SHOULD` boost in `ElasticsearchSearchSubscriber` (1.5M) then pushes it to the top.
+
+- **Lesson:** **`SHOULD` clauses in a `bool` query with a `MUST` clause can only raise the score of documents the `MUST` clause already returned. They CANNOT introduce new documents into the result set.** If a document doesn't match the `MUST` clause, no amount of `SHOULD` boosting will make it appear.
+- **Lesson:** To make a document match that the base query would otherwise miss, you must modify the query that goes into the `MUST` clause — typically by wrapping it in a `bool.should` with `minimum_should_match: 1` containing alternative match paths.
+- **Lesson:** `ElasticsearchHelper::addTerm()` calls `$search->addQuery($query)` which defaults to `BoolQuery::MUST`. So whatever `buildTermQuery()` returns becomes a MUST clause. Decorating `buildTermQuery` is the correct extension point to broaden document matching.
+- **Lesson:** The matching layer (does the document match at all) and the ranking layer (where does it rank) are separate concerns. The decorator handles matching; the subscriber handles ranking. Both are needed for the feature to work end-to-end.
+
+### Challenge 3: Two-Layer Architecture for Leading-Zero Search
+The final architecture required two coordinated changes:
+1. **Matching layer** (`ProductElasticsearchDefinitionDecorator::buildTermQuery`): wraps the base query with `bool.should` + `minimum_should_match: 1` including a `TermQuery` for the stripped SKU → ensures the document enters the result set.
+2. **Ranking layer** (`ElasticsearchSearchSubscriber`): adds a `SHOULD` boost `TermQuery` for the stripped value (1.5M) → ensures the matched product ranks at the top.
+
+- **Lesson:** When a search feature requires both (a) making a document appear that the base query wouldn't return AND (b) ranking it at the top, you need two coordinated changes. The matching fix alone puts the document somewhere in the results; the ranking fix alone can't help a document that doesn't appear.
+- **Lesson:** Existing decorators that already override a method (like `buildTermQuery`) are ideal extension points. Adding behavior there avoids needing to introduce new event subscribers or compiler passes.
+
+### Challenge 4: Plan Adaptation When Codebase Has Evolved
+An implementation plan (`260717_1320__strip-leading-zeros-from-product-number-search.md`) proposed adding `TermQuery('productNumber', $term, boost 30)`, `WildcardQuery('productNumber', '*{term}*', boost 8)`, and `WildcardQuery('productNumber', '*{stripped}', boost 25)`. But the plan was written before the codebase had:
+- `TermQuery` already added (boost 2M) by a previous plan
+- `ConstantScoreQuery` wrappers with large boosts
+
+- **Lesson:** Plans become outdated as the codebase evolves. Always read the current file state before applying a plan's code verbatim. Adapt boost values, query types, and placement to match the current architecture.
+- **Lesson:** Avoid blindly replacing `TermQuery` with `WildcardQuery` or vice versa based on a stale plan. Each query type has different false-positive characteristics that may conflict with user requirements established in later conversations.
+
+### Key Takeaways
+
+- **`SHOULD` vs `MUST` semantics in Elasticsearch:** `SHOULD` clauses in the presence of a `MUST` clause are purely **scoring** — they never add documents. To broaden document matching, modify the `MUST` clause via `bool.should` + `minimum_should_match: 1`.
+- **Exact SKU matching:** Use `TermQuery` on the keyword field (`productNumber`), not `WildcardQuery` with `*term*`. The wildcard catches unwanted substrings like "40001" for "4000".
+- **Leading-zero matching is two-layered:** The decorator makes the document match (via `TermQuery` on stripped value in a `bool.should`/`minimum_should_match: 1` wrapper); the subscriber ranks it (via high-boost `SHOULD` `TermQuery`).
+- **`buildTermQuery` is the right extension point for matching:** Its return value becomes the `MUST` clause. Decorating it lets you add alternative match paths without restructuring the entire search.
+- **Cache vs re-index:** Pure query-time changes (subscriber/decorator PHP code) need `php bin/console cache:clear` only. No `es:reset`/`es:index` is required unless the ES mapping changes.
+- **Plan staleness:** Always reconcile a plan with the current codebase state before implementing. Boost values, query types, and architecture may have shifted since the plan was written.
