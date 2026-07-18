@@ -42,6 +42,11 @@ Component.register('topdata-es-synonym-list', {
                 label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnSynonyms'),
                 allowResize: true,
             }, {
+                property: 'scope',
+                label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnScope'),
+                allowResize: true,
+                sortable: true,
+            }, {
                 property: 'createdAt',
                 label: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.columnCreatedAt'),
                 allowResize: true,
@@ -93,6 +98,7 @@ Component.register('topdata-es-synonym-list', {
             this.currentEntity = this.repository.create();
             this.currentEntity.term = '';
             this.currentEntity.synonyms = '';
+            this.currentEntity.scope = 'global';
             this.activeModal = true;
         },
 

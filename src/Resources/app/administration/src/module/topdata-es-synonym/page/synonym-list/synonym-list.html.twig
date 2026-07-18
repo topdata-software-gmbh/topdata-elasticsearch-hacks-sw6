@@ -30,6 +30,18 @@
             @column-sort="onSortColumn"
             @edit="onEditSynonym"
         >
+            <template #column-scope="{ item }">
+                <sw-label v-if="item.scope === 'global'" variant="neutral" size="medium">
+                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeGlobal') }}
+                </sw-label>
+                <sw-label v-else-if="item.scope === 'product'" variant="info" size="medium">
+                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}
+                </sw-label>
+                <sw-label v-else-if="item.scope === 'category'" variant="success" size="medium">
+                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}
+                </sw-label>
+            </template>
+
             <template #column-createdAt="{ item }">
                 <sw-time-ago :date="item.createdAt" :date-time-format="{ month: '2-digit', day: '2-digit' }" />
             </template>
@@ -52,6 +64,16 @@
                 :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelSynonyms')"
                 :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
             ></sw-textarea-field>
+
+            <sw-select-field
+                v-model="currentEntity.scope"
+                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelScope')"
+                required
+            >
+                <option value="global">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeGlobal') }}</option>
+                <option value="product">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}</option>
+                <option value="category">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}</option>
+            </sw-select-field>
 
             <template #modal-footer>
                 <sw-button size="small" @click="onCloseModal">

@@ -11,6 +11,7 @@ class SynonymEntity extends Entity
 
     protected string $term;
     protected string $synonyms;
+    protected string $scope;
 
     public function getTerm(): string
     {
@@ -30,5 +31,15 @@ class SynonymEntity extends Entity
     public function setSynonyms(string $synonyms): void
     {
         $this->synonyms = $synonyms;
+    }
+
+    public function getScope(): string
+    {
+        return $this->scope;
+    }
+
+    public function setScope(string $scope): void
+    {
+        $this->scope = $scope;
     }
 }

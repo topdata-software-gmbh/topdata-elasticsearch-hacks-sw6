@@ -3,7 +3,8 @@ filename: "_ai/backlog/active/260718_1700__implement_scoped_synonyms.md"
 title: "Implement Scoped-Single-Table Synonyms for Category and Product Search"
 createdAt: 2026-07-18 17:00
 updatedAt: 2026-07-18 17:00
-status: draft
+status: completed
+completedAt: 2026-07-18 17:00
 priority: high
 tags: [shopware, elasticsearch, synonyms, category-search, migrations]
 estimatedComplexity: moderate
@@ -1148,6 +1149,7 @@ updatedAt: 2026-07-18 17:00
 planFile: "_ai/backlog/active/260718_1700__IMPLEMENTATION_PLAN__implement_scoped_synonyms.md"
 project: "SW6.7 Plugin"
 status: completed
+completedAt: 2026-07-18 17:00
 filesCreated: 2
 filesModified: 10
 filesDeleted: 0

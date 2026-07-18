@@ -36,6 +36,7 @@ class SynonymEntityDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             (new StringField('term', 'term'))->addFlags(new Required()),
             (new LongTextField('synonyms', 'synonyms'))->addFlags(new Required()),
+            (new StringField('scope', 'scope'))->addFlags(new Required()),
             (new DateTimeField('created_at', 'createdAt'))->addFlags(new Required()),
         ]);
     }

@@ -113,6 +113,7 @@
         <service id="Topdata\TopdataElasticsearchHacksSW6\Service\CategorySearchService">
             <argument type="service" id="sales_channel.category.repository" key="$categoryRepository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" key="$systemConfigService"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService" key="$synonymService"/>
         </service>
 
         <!-- Category Suggest Subscriber (adds category results to search dropdown) -->

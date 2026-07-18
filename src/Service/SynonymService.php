@@ -15,19 +15,19 @@ class SynonymService
     }
 
     /**
-     * @return array<array{term: string, synonyms: string, created_at: string}>
+     * @return array<array{term: string, synonyms: string, scope: string, created_at: string}>
      */
     public function listSynonyms(?string $filter = null, int $limit = 50, int $offset = 0): array
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('term', 'synonyms', 'created_at')
+        $qb->select('term', 'synonyms', 'scope', 'created_at')
             ->from('topdata_es_synonym')
             ->orderBy('term', 'ASC')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
         if ($filter !== null && $filter !== '') {
-            $qb->where('term LIKE :filter OR synonyms LIKE :filter')
+            $qb->where('term LIKE :filter OR synonyms LIKE :filter OR scope LIKE :filter')
                 ->setParameter('filter', '%' . $filter . '%');
         }
 
@@ -89,8 +89,14 @@ class SynonymService
                 continue;
             }
 
-            $term = trim($parts[0]);
+            $termPart = trim($parts[0]);
             $synonyms = trim($parts[1]);
+
+            if (preg_match('/^\[(global|product|category)\]\s*(.+)$/i', $termPart, $matches)) {
+                $term = trim($matches[2]);
+            } else {
+                $term = $termPart;
+            }
 
             if ($term === '') {
                 $errors[] = [
@@ -156,17 +162,26 @@ class SynonymService
                 }
 
                 $parts = explode('=>', $line, 2);
-                $term = mb_strtolower(trim($parts[0]));
+                $termPart = trim($parts[0]);
                 $synonyms = mb_strtolower(trim($parts[1]));
 
+                $scope = 'global';
+                if (preg_match('/^\[(global|product|category)\]\s*(.+)$/i', $termPart, $matches)) {
+                    $scope = strtolower($matches[1]);
+                    $term = mb_strtolower(trim($matches[2]));
+                } else {
+                    $term = mb_strtolower($termPart);
+                }
+
                 $this->connection->executeStatement(
-                    'INSERT INTO `topdata_es_synonym` (`id`, `term`, `synonyms`, `created_at`)
-                     VALUES (:id, :term, :synonyms, :now)
-                     ON DUPLICATE KEY UPDATE `synonyms` = :synonyms, `created_at` = :now',
+                    'INSERT INTO `topdata_es_synonym` (`id`, `term`, `synonyms`, `scope`, `created_at`)
+                     VALUES (:id, :term, :synonyms, :scope, :now)
+                     ON DUPLICATE KEY UPDATE `synonyms` = :synonyms, `scope` = :scope, `created_at` = :now',
                     [
                         'id' => Uuid::randomBytes(),
                         'term' => $term,
                         'synonyms' => $synonyms,
+                        'scope' => $scope,
                         'now' => (new \DateTime())->format('Y-m-d H:i:s.v')
                     ]
                 );
@@ -183,14 +198,22 @@ class SynonymService
     }
 
     /**
+     * Export synonym lines without prefixes for standard ES config usage.
+     * Only exports rules whose scope matches the requested target (e.g., 'product' retrieves both 'global' and 'product').
+     *
      * @return string[]
      */
-    public function exportToArray(): array
+    public function exportToArray(?string $targetScope = null): array
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('term', 'synonyms')
+        $qb->select('term', 'synonyms', 'scope')
             ->from('topdata_es_synonym')
             ->orderBy('term', 'ASC');
+
+        if ($targetScope !== null) {
+            $qb->where('scope = :scope OR scope = "global"')
+                ->setParameter('scope', $targetScope);
+        }
 
         $rows = $qb->executeQuery()->fetchAllAssociative();
         $rules = [];
@@ -202,20 +225,60 @@ class SynonymService
         return $rules;
     }
 
-    public function exportToString(): string
+    /**
+     * Export database content to a round-trippable backup format including [scope] prefixes.
+     */
+    public function exportToString(?string $targetScope = null): string
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('term', 'synonyms')
+        $qb->select('term', 'synonyms', 'scope')
             ->from('topdata_es_synonym')
             ->orderBy('term', 'ASC');
+
+        if ($targetScope !== null) {
+            $qb->where('scope = :scope OR scope = "global"')
+                ->setParameter('scope', $targetScope);
+        }
 
         $rows = $qb->executeQuery()->fetchAllAssociative();
         $lines = ["# Elasticsearch Synonyms Mapping File", "# Generated: " . (new \DateTime())->format('Y-m-d H:i:s')];
 
         foreach ($rows as $row) {
-            $lines[] = sprintf('%s => %s', $row['term'], $row['synonyms']);
+            $lines[] = sprintf('[%s] %s => %s', $row['scope'], $row['term'], $row['synonyms']);
         }
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Resolves matching expanded synonym terms for run-time query expansion.
+     *
+     * @return string[]
+     */
+    public function getExpandedTerms(string $term, string $targetScope): array
+    {
+        $term = mb_strtolower(trim($term));
+        if ($term === '') {
+            return [];
+        }
+
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('synonyms')
+            ->from('topdata_es_synonym')
+            ->where('term = :term')
+            ->andWhere('scope = :scope OR scope = "global"')
+            ->setParameter('term', $term)
+            ->setParameter('scope', $targetScope);
+
+        $synonymsString = $qb->executeQuery()->fetchOne();
+
+        if ($synonymsString === false || $synonymsString === '') {
+            return [$term];
+        }
+
+        $synonyms = array_map('trim', explode(',', $synonymsString));
+        $synonyms = array_filter($synonyms, fn($s) => $s !== '');
+
+        return array_unique(array_merge([$term], $synonyms));
     }
 }

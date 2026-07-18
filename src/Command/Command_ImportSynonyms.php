@@ -3,18 +3,19 @@
 namespace Topdata\TopdataElasticsearchHacksSW6\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
+use Topdata\TopdataFoundationSW6\TopdataFoundationSW6;
+use Topdata\TopdataFoundationSW6\Util\CliLogger;
 
 #[AsCommand(
     name: 'topdata:es-hacks:import-synonyms',
     description: 'Import synonym mapping rules from a generated text file back into the store database'
 )]
-class Command_ImportSynonyms extends Command
+class Command_ImportSynonyms extends TopdataFoundationSW6
 {
     private SynonymService $synonymService;
 
@@ -39,15 +40,15 @@ class Command_ImportSynonyms extends Command
         try {
             $count = $this->synonymService->importFromFile($filePath, $dryRun);
             if ($dryRun) {
-                $output->writeln(sprintf('<info>[Dry-Run] Mappings checked. %d synonym rule(s) are valid and ready to import.</info>', $count));
+                CliLogger::info(sprintf('[Dry-Run] Mappings checked. %d synonym rule(s) are valid and ready to import.', $count));
             } else {
-                $output->writeln(sprintf('<info>Successfully imported %d synonym rule(s).</info>', $count));
+                CliLogger::success(sprintf('Successfully imported %d synonym rule(s).', $count));
             }
         } catch (\Throwable $e) {
-            $output->writeln('<error>Import failed: ' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            CliLogger::error('Import failed: ' . $e->getMessage());
+            return self::FAILURE;
         }
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

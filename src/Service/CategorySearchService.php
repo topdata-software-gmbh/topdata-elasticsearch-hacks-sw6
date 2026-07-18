@@ -21,6 +21,7 @@ class CategorySearchService
     public function __construct(
         private readonly SalesChannelRepository $categoryRepository,
         private readonly SystemConfigService $systemConfigService,
+        private readonly SynonymService $synonymService,
     ) {
     }
 
@@ -40,7 +41,18 @@ class CategorySearchService
 
         $criteria = new Criteria();
         $criteria->setLimit(self::DB_FETCH_LIMIT);
-        $criteria->addFilter(new ContainsFilter('name', $term));
+
+        $expandedTerms = $this->synonymService->getExpandedTerms($term, 'category');
+        if (count($expandedTerms) > 1) {
+            $orFilter = new OrFilter();
+            foreach ($expandedTerms as $expandedTerm) {
+                $orFilter->addQuery(new ContainsFilter('name', $expandedTerm));
+            }
+            $criteria->addFilter($orFilter);
+        } else {
+            $criteria->addFilter(new ContainsFilter('name', $term));
+        }
+
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('visible', true));
         $criteria->addFilter(new EqualsFilter('type', CategoryDefinition::TYPE_PAGE));

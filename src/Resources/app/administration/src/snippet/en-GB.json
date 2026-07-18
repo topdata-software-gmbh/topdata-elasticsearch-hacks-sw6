@@ -28,12 +28,17 @@
             "listTitle":           "Search Synonyms",
             "columnTerm":          "Search Term",
             "columnSynonyms":      "Mapped Synonyms (Comma-separated)",
+            "columnScope":         "Scope",
             "columnCreatedAt":     "Created At",
             "buttonAdd":           "Add Synonym",
             "modalTitleAdd":       "Create New Synonym",
             "modalTitleEdit":      "Edit Synonym",
             "labelTerm":           "Search Term (e.g. klopapier)",
             "labelSynonyms":       "Synonym Group (e.g. toilettenpapier, wc-papier)",
+            "labelScope":          "Scope",
+            "scopeGlobal":         "Global (Products & Categories)",
+            "scopeProduct":        "Products Only (Elasticsearch)",
+            "scopeCategory":       "Categories Only (Database)",
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
             "saveSuccess":         "Synonym saved successfully."
         }
