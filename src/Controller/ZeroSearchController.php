@@ -26,7 +26,7 @@ class ZeroSearchController extends AbstractController
     public function exportAction(): Response
     {
         $rows = $this->connection->fetchAllAssociative(
-            'SELECT term, count, created_at, last_searched_at FROM topdata_es_zero_search ORDER BY count DESC'
+            'SELECT term, count, created_at, last_searched_at FROM tdeh_zero_search ORDER BY count DESC'
         );
 
         $csv = "\xEF\xBB\xBF";
@@ -55,7 +55,7 @@ class ZeroSearchController extends AbstractController
     )]
     public function resetAction(): JsonResponse
     {
-        $this->connection->executeStatement('TRUNCATE TABLE `topdata_es_zero_search`');
+        $this->connection->executeStatement('TRUNCATE TABLE `tdeh_zero_search`');
 
         return new JsonResponse(['success' => true]);
     }

@@ -27,7 +27,7 @@ Component.register('topdata-es-synonym-list', {
 
     computed: {
         repository() {
-            return this.repositoryFactory.create('topdata_es_synonym');
+            return this.repositoryFactory.create('tdeh_synonym');
         },
 
         columns() {

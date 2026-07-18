@@ -44,7 +44,7 @@ class ProductSearchSubscriber implements EventSubscriberInterface
 
         try {
             $this->connection->executeStatement(
-                'INSERT INTO `topdata_es_zero_search` (`id`, `term`, `count`, `created_at`, `last_searched_at`)
+                'INSERT INTO `tdeh_zero_search` (`id`, `term`, `count`, `created_at`, `last_searched_at`)
                  VALUES (:id, :term, 1, :now, :now)
                  ON DUPLICATE KEY UPDATE `count` = `count` + 1, `last_searched_at` = :now',
                 [

@@ -26,7 +26,7 @@ Component.register('topdata-es-zero-search-list', {
 
     computed: {
         repository() {
-            return this.repositoryFactory.create('topdata_es_zero_search');
+            return this.repositoryFactory.create('tdeh_zero_search');
         },
 
         columns() {

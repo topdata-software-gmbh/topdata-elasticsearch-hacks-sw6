@@ -21,7 +21,7 @@ class SynonymService
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('term', 'synonyms', 'scope', 'created_at')
-            ->from('topdata_es_synonym')
+            ->from('tdeh_synonym')
             ->orderBy('term', 'ASC')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
@@ -37,7 +37,7 @@ class SynonymService
     public function deleteSynonym(string $term): bool
     {
         $deleted = $this->connection->executeStatement(
-            'DELETE FROM `topdata_es_synonym` WHERE `term` = :term',
+            'DELETE FROM `tdeh_synonym` WHERE `term` = :term',
             ['term' => mb_strtolower(trim($term))]
         );
 
@@ -46,7 +46,7 @@ class SynonymService
 
     public function clearAllSynonyms(): int
     {
-        return (int) $this->connection->executeStatement('TRUNCATE TABLE `topdata_es_synonym`');
+        return (int) $this->connection->executeStatement('TRUNCATE TABLE `tdeh_synonym`');
     }
 
     public function validateFile(string $filePath): array
@@ -174,7 +174,7 @@ class SynonymService
                 }
 
                 $this->connection->executeStatement(
-                    'INSERT INTO `topdata_es_synonym` (`id`, `term`, `synonyms`, `scope`, `created_at`)
+                    'INSERT INTO `tdeh_synonym` (`id`, `term`, `synonyms`, `scope`, `created_at`)
                      VALUES (:id, :term, :synonyms, :scope, :now)
                      ON DUPLICATE KEY UPDATE `synonyms` = :synonyms, `scope` = :scope, `created_at` = :now',
                     [
@@ -207,7 +207,7 @@ class SynonymService
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('term', 'synonyms', 'scope')
-            ->from('topdata_es_synonym')
+            ->from('tdeh_synonym')
             ->orderBy('term', 'ASC');
 
         if ($targetScope !== null) {
@@ -232,7 +232,7 @@ class SynonymService
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->select('term', 'synonyms', 'scope')
-            ->from('topdata_es_synonym')
+            ->from('tdeh_synonym')
             ->orderBy('term', 'ASC');
 
         if ($targetScope !== null) {
@@ -264,7 +264,7 @@ class SynonymService
 
         $qb = $this->connection->createQueryBuilder();
         $qb->select('synonyms')
-            ->from('topdata_es_synonym')
+            ->from('tdeh_synonym')
             ->where('term = :term')
             ->andWhere('scope = :scope OR scope = "global"')
             ->setParameter('term', $term)

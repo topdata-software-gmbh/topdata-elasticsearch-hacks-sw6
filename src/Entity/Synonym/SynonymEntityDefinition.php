@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class SynonymEntityDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'topdata_es_synonym';
+    public const ENTITY_NAME = 'tdeh_synonym';
 
     public function getEntityName(): string
     {

@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class ZeroSearchEntityDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'topdata_es_zero_search';
+    public const ENTITY_NAME = 'tdeh_zero_search';
 
     public function getEntityName(): string
     {
