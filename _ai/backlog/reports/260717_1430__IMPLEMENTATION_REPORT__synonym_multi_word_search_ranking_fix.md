@@ -68,7 +68,7 @@ php bin/console es:test:analyzer "WC Papier"
 # sw_german_analyzer or topdata_delimiter_analyzer.
 
 # 3. Debug score breakdown on the storefront search for the multi-word synonym:
-php bin/console topdata:debug:search "WC Papier"
+php bin/console topdata:es-hacks:debug-search "WC Papier"
 # Expected: top hits show constant-score contribution of ~1_000_000 for every
 # product where name.search analyzer emits "wc-papier"; all such products
 # crowd to the top with identical scores, followed by delimiter (200_000)

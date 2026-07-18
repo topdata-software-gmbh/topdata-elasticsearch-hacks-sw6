@@ -35,7 +35,7 @@ The implementation successfully updated the search subscriber query boosting coe
 * Raised `MatchQuery` clean field (AND) boost to `20.0`.
 * Raised `MatchQuery` delimiter field (AND) fallback match boost to `15.0`.
 * Raised Standalone Word Wildcard queries on the keyword field to `15.0` to defeat BM25 length normalization on actual matching targets.
-* Resolved mapping discrepancy in CLI `topdata:debug:search` by adding the delimiter fallback and wildcard clauses to match the storefront logic.
+* Resolved mapping discrepancy in CLI `topdata:es-hacks:debug-search` by adding the delimiter fallback and wildcard clauses to match the storefront logic.
 
 ## 4. Deviations from Plan
 * None. All phases followed the outlined steps and parameters.
@@ -46,8 +46,8 @@ The implementation successfully updated the search subscriber query boosting coe
 ## 6. Testing Notes
 Verify the results using:
 ```bash
-php bin/console topdata:debug:search "WC Papier"
-php bin/console topdata:debug:search "Papierhandtücher"
+php bin/console topdata:es-hacks:debug-search "WC Papier"
+php bin/console topdata:es-hacks:debug-search "Papierhandtücher"
 ```
 
 ## 7. Documentation Updates

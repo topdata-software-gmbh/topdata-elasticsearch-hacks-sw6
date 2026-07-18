@@ -149,7 +149,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'topdata:debug:search',
+    name: 'topdata:es-hacks:debug-search',
     description: 'Debug ES search scoring for a given term'
 )]
 class Command_DebugSearch extends Command
@@ -340,7 +340,7 @@ class Command_DebugSearch extends Command
 2. **Execute Diagnostic Console Test:**
    Run the debug console tool to confirm the new query logic is applied and exact matches receive high phrase boosting [1.1.1]:
    ```bash
-   php bin/console topdata:debug:search "Papierhandtücher"
+   php bin/console topdata:es-hacks:debug-search "Papierhandtücher"
    ```
 3. **Verify Field Ranking order:**
    Confirm that the product exactly named `"Papierhandtücher"` registers a score significantly higher than `"Papierhandtücher-Halter"`, ranking first in the index.
@@ -398,7 +398,7 @@ By keeping the weak prefix query on the raw keyword field rather than the analyz
 ## 6. Testing Notes
 Verify the results using the debug tool:
 ```bash
-php bin/console topdata:debug:search "Papierhandtücher"
+php bin/console topdata:es-hacks:debug-search "Papierhandtücher"
 ```
 Ensure that the exact name product matches score substantially higher than compound variants.
 ```

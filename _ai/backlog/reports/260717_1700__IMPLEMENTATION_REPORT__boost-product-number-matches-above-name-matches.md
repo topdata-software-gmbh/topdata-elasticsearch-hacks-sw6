@@ -54,7 +54,7 @@ Both are term-level queries that inherently produce constant scores in Lucene (n
 
 ```bash
 php bin/console cache:clear
-php bin/console topdata:debug:search "4000"
+php bin/console topdata:es-hacks:debug-search "4000"
 ```
 
 Expected: COLOP 4000WD/F, COLOP 4000WD/I, COLOP 4000WD/D appear in positions 1–3, above "Scosche magicPACK Powerbank 4000 mAh".

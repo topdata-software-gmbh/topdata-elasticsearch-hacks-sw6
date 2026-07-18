@@ -48,7 +48,7 @@ php bin/console es:reset && php bin/console es:index --no-queue && php bin/conso
 | `export-synonyms` | Backup to file (`--output`) |
 | `delete-synonym <term>` | Remove one mapping |
 | `clear-synonyms` | Wipe all (`--force` to skip confirm) |
-| `topdata:debug:search <term>` | Debug ES scoring with explain output |
+| `topdata:es-hacks:debug-search <term>` | Debug ES scoring with explain output |
 
 **Synonym file format**: `term => synonym1, synonym2` (one per line, `#` or `//` for comments).
 

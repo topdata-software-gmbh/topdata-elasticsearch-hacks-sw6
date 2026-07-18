@@ -6,16 +6,16 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
-use Topdata\TopdataFoundationSW6\TopdataFoundationSW6;
 use Topdata\TopdataFoundationSW6\Util\CliLogger;
 
 #[AsCommand(
     name: 'topdata:es-hacks:list-synonyms',
     description: 'View and filter synonym records currently active in the database store'
 )]
-class Command_ListSynonyms extends TopdataFoundationSW6
+class Command_ListSynonyms extends Command
 {
     private SynonymService $synonymService;
 

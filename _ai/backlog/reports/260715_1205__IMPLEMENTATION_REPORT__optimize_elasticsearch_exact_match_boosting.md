@@ -39,6 +39,6 @@ By keeping the weak prefix query on the raw keyword field rather than the analyz
 ## 6. Testing Notes
 Verify the results using the debug tool:
 ```bash
-php bin/console topdata:debug:search "Papierhandtücher"
+php bin/console topdata:es-hacks:debug-search "Papierhandtücher"
 ```
 Ensure that the exact name product matches score substantially higher than compound variants.

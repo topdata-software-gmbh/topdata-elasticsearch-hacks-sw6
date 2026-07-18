@@ -589,7 +589,7 @@ php bin/console es:create:alias
    * **Term:** `wc-papier`
    * **Synonym group:** `klopapier, toilettenpapier`
 3. Execute a reindex from terminal.
-4. Run `php bin/console topdata:debug:search "klopapier"`. Verify that products containing `"WC-Papier"` are found and match via the synonym-expanded mapping!
+4. Run `php bin/console topdata:es-hacks:debug-search "klopapier"`. Verify that products containing `"WC-Papier"` are found and match via the synonym-expanded mapping!
 
 ---
 

@@ -224,7 +224,7 @@ Verify that searching for `"4000"` places products with `"4000"` in their produc
 2. Ensure ES is running and indices are current
 3. Use the debug search command to inspect scoring:
    ```bash
-   php bin/console topdata:debug:search "4000"
+   php bin/console topdata:es-hacks:debug-search "4000"
    ```
 4. Verify the order:
    - Products like **COLOP 4000WD/F**, **COLOP 4000WD/I**, **COLOP 4000WD/D** should appear in positions 1–3

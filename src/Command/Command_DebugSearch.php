@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'topdata:debug:search',
+    name: 'topdata:es-hacks:debug-search',
     description: 'Debug ES search scoring for a given term'
 )]
 class Command_DebugSearch extends Command

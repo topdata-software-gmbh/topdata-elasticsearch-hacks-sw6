@@ -6,16 +6,16 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
-use Topdata\TopdataFoundationSW6\TopdataFoundationSW6;
 use Topdata\TopdataFoundationSW6\Util\CliLogger;
 
 #[AsCommand(
     name: 'topdata:es-hacks:import-synonyms',
     description: 'Import synonym mapping rules from a generated text file back into the store database'
 )]
-class Command_ImportSynonyms extends TopdataFoundationSW6
+class Command_ImportSynonyms extends Command
 {
     private SynonymService $synonymService;
 

@@ -61,5 +61,5 @@ php bin/console es:index --no-queue
 php bin/console es:create:alias
 
 # Test that synonyms are applied during search
-php bin/console topdata:debug:search "klopapier"
+php bin/console topdata:es-hacks:debug-search "klopapier"
 ```
