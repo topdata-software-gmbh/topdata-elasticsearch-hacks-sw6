@@ -8,12 +8,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
+use Topdata\TopdataFoundationSW6\Command\AbstractTopdataCommand;
 
 #[AsCommand(
     name: 'topdata:es-hacks:export-synonyms',
     description: 'Exports current synonym records from the database into a backup text file'
 )]
-class Command_ExportSynonyms extends Command
+class Command_ExportSynonyms extends AbstractTopdataCommand
 {
     private SynonymService $synonymService;
 

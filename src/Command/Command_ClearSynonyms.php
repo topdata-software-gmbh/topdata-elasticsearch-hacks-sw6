@@ -9,12 +9,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
+use Topdata\TopdataFoundationSW6\Command\AbstractTopdataCommand;
 
 #[AsCommand(
     name: 'topdata:es-hacks:clear-synonyms',
     description: 'Bulk purges all active synonym mappings from the database'
 )]
-class Command_ClearSynonyms extends Command
+class Command_ClearSynonyms extends AbstractTopdataCommand
 {
     private SynonymService $synonymService;
 

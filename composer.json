@@ -12,7 +12,8 @@
         }
     ],
     "require":     {
-        "shopware/core": "6.7.*"
+        "shopware/core": "6.7.*",
+        "topdata/topdata-foundation-sw6": "~1.4.0"
     },
     "extra":       {
         "shopware-plugin-class": "Topdata\\TopdataElasticsearchHacksSW6\\TopdataElasticsearchHacksSW6",

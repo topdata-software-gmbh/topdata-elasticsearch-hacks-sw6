@@ -11,12 +11,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Topdata\TopdataFoundationSW6\Command\AbstractTopdataCommand;
 
 #[AsCommand(
     name: 'topdata:es-hacks:debug-search',
     description: 'Debug ES search scoring for a given term'
 )]
-class Command_DebugSearch extends Command
+class Command_DebugSearch extends AbstractTopdataCommand
 {
     public function __construct(
         private readonly Client $client,

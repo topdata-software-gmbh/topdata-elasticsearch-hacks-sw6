@@ -8,12 +8,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
+use Topdata\TopdataFoundationSW6\Command\AbstractTopdataCommand;
 
 #[AsCommand(
     name: 'topdata:es-hacks:delete-synonym',
     description: 'Deletes a specific synonym configuration rule by key term'
 )]
-class Command_DeleteSynonym extends Command
+class Command_DeleteSynonym extends AbstractTopdataCommand
 {
     private SynonymService $synonymService;
 

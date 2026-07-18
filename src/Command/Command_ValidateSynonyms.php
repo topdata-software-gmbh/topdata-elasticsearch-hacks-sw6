@@ -8,12 +8,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Topdata\TopdataElasticsearchHacksSW6\Service\SynonymService;
+use Topdata\TopdataFoundationSW6\Command\AbstractTopdataCommand;
 
 #[AsCommand(
     name: 'topdata:es-hacks:validate-synonyms',
     description: 'Validates formatting syntax of a local synonym text file without importing'
 )]
-class Command_ValidateSynonyms extends Command
+class Command_ValidateSynonyms extends AbstractTopdataCommand
 {
     private SynonymService $synonymService;
 
