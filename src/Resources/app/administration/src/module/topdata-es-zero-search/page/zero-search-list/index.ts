@@ -10,6 +10,7 @@ Component.register('topdata-es-zero-search-list', {
 
     mixins: [
         Mixin.getByName('listing'),
+        Mixin.getByName('notification'),
     ],
 
     data() {
@@ -19,6 +20,7 @@ Component.register('topdata-es-zero-search-list', {
             sortBy: 'count',
             sortDirection: 'DESC',
             limit: 25,
+            showResetModal: false,
         };
     },
 
@@ -63,27 +65,11 @@ Component.register('topdata-es-zero-search-list', {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection));
 
-            console.log('[zero-search-list] getList() called', {
-                page: this.page,
-                limit: this.limit,
-                sortBy: this.sortBy,
-                sortDirection: this.sortDirection,
-                criteria,
-            });
-
             this.repository.search(criteria).then((result) => {
-                console.log('[zero-search-list] search SUCCESS', {
-                    total: result.total,
-                    length: result.length,
-                    firstItem: result[0] || null,
-                    resultType: typeof result,
-                    result,
-                });
                 this.total = result.total;
                 this.items = result;
                 this.isLoading = false;
-            }).catch((error) => {
-                console.error('[zero-search-list] search FAILED', error);
+            }).catch(() => {
                 this.isLoading = false;
             });
         },
@@ -98,6 +84,54 @@ Component.register('topdata-es-zero-search-list', {
             this.sortBy = column.dataIndex ?? column.property;
             this.sortDirection = column.sortDirection ?? 'ASC';
             this.getList();
+        },
+
+        onDownloadCsv() {
+            const httpClient = Shopware.Application.getContainer('init').httpClient;
+            httpClient.get('_action/topdata-elasticsearch-hacks-sw6/zero-results/export', {
+                responseType: 'blob',
+            }).then((response) => {
+                const url = window.URL.createObjectURL(response.data);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'zero-search-results.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.exportError'),
+                });
+            });
+        },
+
+        onReset() {
+            this.showResetModal = true;
+        },
+
+        onConfirmReset() {
+            this.showResetModal = false;
+            this.isLoading = true;
+
+            const httpClient = Shopware.Application.getContainer('init').httpClient;
+            httpClient.post('_action/topdata-elasticsearch-hacks-sw6/zero-results/reset', {})
+                .then(() => {
+                    this.createNotificationSuccess({
+                        message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.resetSuccess'),
+                    });
+                    this.getList();
+                })
+                .catch(() => {
+                    this.createNotificationError({
+                        message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.resetError'),
+                    });
+                    this.isLoading = false;
+                });
+        },
+
+        onCancelReset() {
+            this.showResetModal = false;
         },
     },
 });

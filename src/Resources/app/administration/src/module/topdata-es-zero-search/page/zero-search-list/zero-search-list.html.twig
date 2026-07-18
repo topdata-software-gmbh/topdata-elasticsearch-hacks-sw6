@@ -3,6 +3,15 @@
         <h2>{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.title') }}</h2>
     </template>
 
+    <template #smart-bar-actions>
+        <sw-button variant="primary" @click="onDownloadCsv">
+            {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.buttonDownloadCsv') }}
+        </sw-button>
+        <sw-button variant="danger" @click="onReset">
+            {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.buttonReset') }}
+        </sw-button>
+    </template>
+
     <template #content>
         <sw-entity-listing
             v-if="items"
@@ -31,5 +40,23 @@
                 <sw-time-ago v-if="item.createdAt" :date="item.createdAt" />
             </template>
         </sw-entity-listing>
+
+        <sw-modal
+            v-if="showResetModal"
+            :title="$tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.resetModalTitle')"
+            variant="small"
+            @modal-close="onCancelReset"
+        >
+            <p>{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.resetModalBody') }}</p>
+
+            <template #modal-footer>
+                <sw-button size="small" @click="onCancelReset">
+                    {{ $tc('global.default.cancel') }}
+                </sw-button>
+                <sw-button variant="danger" size="small" @click="onConfirmReset">
+                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-zero-search.resetModalConfirm') }}
+                </sw-button>
+            </template>
+        </sw-modal>
     </template>
 </sw-page>
