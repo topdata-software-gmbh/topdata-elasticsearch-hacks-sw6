@@ -45,6 +45,10 @@
             .search-suggest-container-categories .suggest-title:hover {
                 background-color: transparent;
             }
+            .search-suggest {
+                max-height: calc(100vh - 150px);
+                overflow-y: auto;
+            }
         </style>
     {% endif %}
     {{ parent() }}
