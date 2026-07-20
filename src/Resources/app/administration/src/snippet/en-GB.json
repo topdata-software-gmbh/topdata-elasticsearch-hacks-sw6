@@ -4,6 +4,7 @@
             "mainTitle":         "Topdata ES",
             "zeroSearchResults": "Zero Search Results",
             "searchStats":       "Search Statistics",
+            "searchLog":         "Search Log",
             "synonyms":          "Synonyms"
         },
         "topdata-es-zero-search": {
@@ -41,6 +42,17 @@
             "resetSuccess":         "Search statistics have been reset.",
             "resetError":           "Failed to reset search statistics.",
             "exportError":          "Failed to export search statistics."
+        },
+        "topdata-es-search-log": {
+            "title":                "Search Log",
+            "description":          "Live view of raw search queries",
+            "columnTerm":           "Search Term",
+            "columnResultCount":    "Results",
+            "columnSessionToken":   "Session",
+            "columnCreatedAt":      "Searched At",
+            "buttonRefresh":        "Refresh",
+            "searchPlaceholder":    "Filter by search term…",
+            "transientNotice":      "This log is transient. Raw search queries are automatically consolidated and purged hourly by the background task. Data shown here is a live snapshot and may disappear after the next consolidation run."
         },
         "topdata-es-synonym":     {
             "title":               "Synonyms",

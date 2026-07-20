@@ -4,6 +4,7 @@
             "mainTitle":         "Topdata ES",
             "zeroSearchResults": "Null-Suchergebnisse",
             "searchStats":       "Suchstatistiken",
+            "searchLog":         "Suchprotokoll",
             "synonyms":          "Synonyme"
         },
         "topdata-es-zero-search": {
@@ -41,6 +42,17 @@
             "resetSuccess":         "Suchstatistiken wurden zurückgesetzt.",
             "resetError":           "Fehler beim Zurücksetzen der Suchstatistiken.",
             "exportError":          "Fehler beim Exportieren der Suchstatistiken."
+        },
+        "topdata-es-search-log": {
+            "title":                "Suchprotokoll",
+            "description":          "Live-Ansicht der rohen Suchanfragen",
+            "columnTerm":           "Suchbegriff",
+            "columnResultCount":    "Ergebnisse",
+            "columnSessionToken":   "Sitzung",
+            "columnCreatedAt":      "Gesucht am",
+            "buttonRefresh":        "Aktualisieren",
+            "searchPlaceholder":    "Nach Suchbegriff filtern…",
+            "transientNotice":      "Dieses Protokoll ist transient. Rohe Suchanfragen werden stündlich automatisch konsolidiert und gelöscht. Die angezeigten Daten sind eine Live-Momentaufnahme und können nach der nächsten Konsolidierung verschwinden."
         },
         "topdata-es-synonym":     {
             "description":         "Verwaltung von Suchsynonymen für Elasticsearch",

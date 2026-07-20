@@ -9,6 +9,11 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <!-- SearchLog Entity Definition -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Entity\SearchLog\SearchLogEntityDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <!-- SearchStats Entity Definition -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Entity\SearchStats\SearchStatsEntityDefinition">
             <tag name="shopware.entity.definition"/>
