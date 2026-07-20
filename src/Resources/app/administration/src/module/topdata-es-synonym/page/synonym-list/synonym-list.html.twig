@@ -32,7 +32,7 @@
         >
             <template #column-scope="{ item }">
                 <sw-label v-if="item.scope === 'global'" variant="neutral" size="medium">
-                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeGlobal') }}
+                    {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeBoth') }}
                 </sw-label>
                 <sw-label v-else-if="item.scope === 'product'" variant="info" size="medium">
                     {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}
@@ -65,15 +65,31 @@
                 :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
             ></sw-textarea-field>
 
-            <sw-select-field
-                v-model="currentEntity.scope"
+            <sw-field
                 :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelScope')"
-                required
+                class="topdata-es-synonym-scope-group"
             >
-                <option value="global">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeGlobal') }}</option>
-                <option value="product">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}</option>
-                <option value="category">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}</option>
-            </sw-select-field>
+                <sw-button-group split-button="false">
+                    <sw-button
+                        :variant="currentEntity.scope === 'product' ? 'primary' : 'ghost'"
+                        @click="currentEntity.scope = 'product'"
+                    >
+                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}
+                    </sw-button>
+                    <sw-button
+                        :variant="currentEntity.scope === 'category' ? 'primary' : 'ghost'"
+                        @click="currentEntity.scope = 'category'"
+                    >
+                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}
+                    </sw-button>
+                    <sw-button
+                        :variant="currentEntity.scope === 'global' ? 'primary' : 'ghost'"
+                        @click="currentEntity.scope = 'global'"
+                    >
+                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeBoth') }}
+                    </sw-button>
+                </sw-button-group>
+            </sw-field>
 
             <template #modal-footer>
                 <sw-button size="small" @click="onCloseModal">

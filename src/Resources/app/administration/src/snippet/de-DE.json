@@ -36,8 +36,9 @@
             "labelSynonyms":       "Synonymgruppe (z.B. toilettenpapier, wc-papier)",
             "labelScope":          "Gültigkeitsbereich",
             "scopeGlobal":         "Global (Produkte & Kategorien)",
-            "scopeProduct":        "Nur Produkte (Elasticsearch)",
-            "scopeCategory":       "Nur Kategorien (Datenbank)",
+            "scopeBoth":           "Beides (Produkte & Kategorien)",
+            "scopeProduct":        "Nur Produkte",
+            "scopeCategory":       "Nur Kategorien",
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
             "saveSuccess":         "Synonym erfolgreich gespeichert."
         }
