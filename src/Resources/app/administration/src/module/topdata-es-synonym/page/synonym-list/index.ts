@@ -127,6 +127,26 @@ Component.register('topdata-es-synonym-list', {
             this.itemToDelete = null;
         },
 
+        onDownloadCsv() {
+            const httpClient = Shopware.Application.getContainer('init').httpClient;
+            httpClient.get('_action/topdata-elasticsearch-hacks-sw6/synonyms/export', {
+                responseType: 'blob',
+            }).then((response) => {
+                const url = window.URL.createObjectURL(response.data);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'synonyms.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.exportError'),
+                });
+            });
+        },
+
         onConfirmDelete() {
             this.repository.delete(this.itemToDelete.id).then(() => {
                 this.createNotificationSuccess({

@@ -43,7 +43,9 @@
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
             "saveSuccess":         "Synonym saved successfully.",
             "deleteSuccess":       "Synonym deleted successfully.",
-            "deleteConfirmText":   "Are you sure you want to delete the synonym \"{term}\"?"
+            "deleteConfirmText":   "Are you sure you want to delete the synonym \"{term}\"?",
+            "buttonDownloadCsv":   "Download CSV",
+            "exportError":         "Failed to export synonyms."
         }
     }
 }

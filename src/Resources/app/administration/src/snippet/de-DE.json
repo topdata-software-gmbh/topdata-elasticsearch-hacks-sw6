@@ -42,7 +42,9 @@
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
             "saveSuccess":         "Synonym erfolgreich gespeichert.",
             "deleteSuccess":       "Synonym erfolgreich gelöscht.",
-            "deleteConfirmText":   "Sind Sie sicher, dass das Synonym \"{term}\" gelöscht werden soll?"
+            "deleteConfirmText":   "Sind Sie sicher, dass das Synonym \"{term}\" gelöscht werden soll?",
+            "buttonDownloadCsv":   "CSV herunterladen",
+            "exportError":         "Fehler beim Exportieren der Synonyme."
         }
     }
 }

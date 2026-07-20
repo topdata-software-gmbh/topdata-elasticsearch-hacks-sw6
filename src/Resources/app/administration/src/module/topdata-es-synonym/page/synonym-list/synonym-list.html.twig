@@ -4,6 +4,9 @@
     </template>
 
     <template #smart-bar-actions>
+        <sw-button variant="primary" @click="onDownloadCsv">
+            {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.buttonDownloadCsv') }}
+        </sw-button>
         <sw-button variant="primary" @click="onAddSynonym">
             {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.buttonAdd') }}
         </sw-button>
