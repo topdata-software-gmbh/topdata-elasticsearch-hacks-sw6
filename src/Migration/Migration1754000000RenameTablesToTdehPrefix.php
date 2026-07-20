@@ -14,10 +14,24 @@ class Migration1754000000RenameTablesToTdehPrefix extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeStatement('
-            RENAME TABLE `topdata_es_synonym` TO `tdeh_synonym`,
-                         `topdata_es_zero_search` TO `tdeh_zero_search`
-        ');
+        $renames = [];
+        if ($this->tableExists($connection, 'topdata_es_synonym') && !$this->tableExists($connection, 'tdeh_synonym')) {
+            $renames[] = '`topdata_es_synonym` TO `tdeh_synonym`';
+        }
+        if ($this->tableExists($connection, 'topdata_es_zero_search') && !$this->tableExists($connection, 'tdeh_zero_search')) {
+            $renames[] = '`topdata_es_zero_search` TO `tdeh_zero_search`';
+        }
+
+        if ($renames !== []) {
+            $connection->executeStatement('RENAME TABLE ' . implode(', ', $renames));
+        }
+    }
+
+    private function tableExists(Connection $connection, string $table): bool
+    {
+        $result = $connection->fetchOne('SHOW TABLES LIKE :table', ['table' => $table]);
+
+        return $result !== false;
     }
 
     public function updateDestructive(Connection $connection): void
