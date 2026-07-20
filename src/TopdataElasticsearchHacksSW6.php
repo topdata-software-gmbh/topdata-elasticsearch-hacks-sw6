@@ -26,7 +26,15 @@ class TopdataElasticsearchHacksSW6 extends Plugin
         }
 
         $connection = $this->container->get(Connection::class);
-        foreach (['tdeh_synonym', 'tdeh_zero_search', 'topdata_es_synonym', 'topdata_es_zero_search'] as $table) {
+        $tables = [
+            'tdeh_synonym',
+            'tdeh_zero_search',
+            'topdata_es_synonym',
+            'topdata_es_zero_search',
+            'tdeh_search_log',
+            'tdeh_search_stats'
+        ];
+        foreach ($tables as $table) {
             $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', $table));
         }
     }

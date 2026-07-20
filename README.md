@@ -49,11 +49,37 @@ Entries can be sorted, paginated, and deleted directly from the admin grid.
 
 ---
 
-## Command Reference Guide: Synonym & Zero-Result Analytics
+## Administration Module: Search Statistics
 
-This plugin contains a comprehensive suite of console commands to help merchants audit, optimize, and organize search synonyms.
+The plugin ships with an advanced search analytics dashboard that tracks all search queries (both successful and zero-result) and consolidates keystroke fragments into meaningful search intents.
 
-### 1. Identify Failed Searches (Zero-Result Terms)
+* **Navigation:** Topdata ES → Search Statistics
+* **Route:** `topdata.es.search.stats.list`
+* **Access:** Requires privilege `system.zero_search.viewer`
+
+The listing page shows consolidated search metrics:
+* **Search Term** — the final intended search query
+* **Total Searches** — how many times the term was searched
+* **Zero Result Searches** — how many times it returned no products
+* **Avg Hit Count** — average number of results returned
+* **Last Searched / First Seen** — timestamps
+
+Entries can be sorted, paginated, and deleted directly from the admin grid. CSV export and full data reset are available from the action bar.
+
+---
+
+## Command Reference Guide: Synonym, Search Analytics & Zero-Result Commands
+
+This plugin contains a comprehensive suite of console commands to help merchants audit, optimize, and organize search synonyms and analytics.
+
+### 1. Consolidate Raw Search Logs
+Process raw search logs into aggregated statistics, filtering out keystroke fragments and typing corrections:
+```bash
+php bin/console topdata:es-hacks:consolidate-search-logs --batch-size=100
+```
+*Note: This process runs automatically every hour via Shopware Scheduled Tasks.*
+
+### 2. Identify Failed Searches (Zero-Result Terms)
 Extract terms entered by customers that returned no matches, formatted directly for an LLM prompt:
 ```bash
 # Print standard console table view of failures
@@ -119,6 +145,14 @@ Automated management scripts can retrieve zero-result queries via Shopware Admin
   * `limit` (default: 100)
   * `minCount` (default: 1)
   * `format` (`json`, `csv`, `markdown`)
+
+### Search Statistics Export (CSV)
+* **Route:** `GET /api/_action/topdata-elasticsearch-hacks-sw6/search-stats/export`
+* **Returns:** CSV file with all consolidated search statistics
+
+### Search Statistics Reset
+* **Route:** `POST /api/_action/topdata-elasticsearch-hacks-sw6/search-stats/reset`
+* **Returns:** `{"success": true}`
 
 ## Requirements
 

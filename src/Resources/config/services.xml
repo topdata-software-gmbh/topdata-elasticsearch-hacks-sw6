@@ -9,6 +9,11 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <!-- SearchStats Entity Definition -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Entity\SearchStats\SearchStatsEntityDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <!-- Synonym Entity Definition -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Entity\Synonym\SynonymEntityDefinition">
             <tag name="shopware.entity.definition"/>
@@ -19,7 +24,11 @@
             <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
         </service>
 
-        <!-- Storefront Search Fail Aggregation Subscriber -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Service\SearchAnalyticsService" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
+        </service>
+
+        <!-- Storefront Search Logging Subscriber -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Subscriber\ProductSearchSubscriber">
             <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
             <tag name="kernel.event_subscriber"/>
@@ -53,11 +62,27 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <!-- Debug Commands -->
+        <!-- Debug & Analytics Commands -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_DebugSearch">
             <argument type="service" id="OpenSearch\Client" key="$client"/>
             <argument type="service" id="Shopware\Elasticsearch\Framework\ElasticsearchHelper" key="$esHelper"/>
             <tag name="console.command"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Command\Command_ConsolidateSearchLogs">
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SearchAnalyticsService" key="$analyticsService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <!-- Scheduled Tasks -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Framework\ScheduledTask\ConsolidateSearchLogsTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Framework\ScheduledTask\ConsolidateSearchLogsTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Topdata\TopdataElasticsearchHacksSW6\Service\SearchAnalyticsService" key="$analyticsService"/>
+            <tag name="messenger.message_handler"/>
         </service>
 
         <!-- Command Line Control Suite Services -->
@@ -108,6 +133,13 @@
         </service>
 
         <service id="Topdata\TopdataElasticsearchHacksSW6\Controller\ZeroSearchController" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Controller\SearchStatsController" public="true">
             <argument type="service" id="Doctrine\DBAL\Connection" key="$connection"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

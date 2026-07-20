@@ -3,6 +3,7 @@
         "nav":                    {
             "mainTitle":         "Topdata ES",
             "zeroSearchResults": "Zero Search Results",
+            "searchStats":       "Search Statistics",
             "synonyms":          "Synonyms"
         },
         "topdata-es-zero-search": {
@@ -21,6 +22,25 @@
             "resetSuccess":         "Zero search results have been reset.",
             "resetError":           "Failed to reset zero search results.",
             "exportError":          "Failed to export zero search results."
+        },
+        "topdata-es-search-stats": {
+            "title":                "Search Statistics",
+            "description":          "Detailed customer search statistics",
+            "listTitle":            "Search Terms",
+            "columnTerm":           "Search Term",
+            "columnCount":          "Total Searches",
+            "columnZeroCount":      "Zero Result Searches",
+            "columnAvgResultCount": "ø Hit Count",
+            "columnLastSearchedAt": "Last Searched",
+            "columnCreatedAt":      "First Seen",
+            "buttonDownloadCsv":    "Download CSV",
+            "buttonReset":          "Reset",
+            "resetModalTitle":      "Reset Search Statistics",
+            "resetModalBody":       "Are you sure you want to delete all search statistics and pending search logs? This action cannot be undone.",
+            "resetModalConfirm":    "Yes, reset all",
+            "resetSuccess":         "Search statistics have been reset.",
+            "resetError":           "Failed to reset search statistics.",
+            "exportError":          "Failed to export search statistics."
         },
         "topdata-es-synonym":     {
             "title":               "Synonyms",

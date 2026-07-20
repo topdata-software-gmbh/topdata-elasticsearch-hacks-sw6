@@ -4,6 +4,7 @@ namespace Topdata\TopdataElasticsearchHacksSW6\Subscriber;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Content\Product\Events\ProductSearchResultEvent;
+use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
 use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -20,19 +21,16 @@ class ProductSearchSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProductEvents::PRODUCT_SEARCH_RESULT => 'onSearchResult'
+            ProductEvents::PRODUCT_SEARCH_RESULT => 'onSearchResult',
+            ProductEvents::PRODUCT_SUGGEST_RESULT => 'onSearchResult',
         ];
     }
 
-    public function onSearchResult(ProductSearchResultEvent $event): void
+    public function onSearchResult($event): void
     {
         $result = $event->getResult();
-
-        if ($result->getTotal() !== 0) {
-            return;
-        }
-
         $term = $result->getCriteria()->getTerm();
+
         if ($term === null || trim($term) === '') {
             return;
         }
@@ -42,19 +40,26 @@ class ProductSearchSubscriber implements EventSubscriberInterface
             $term = mb_substr($term, 0, 255);
         }
 
+        if (mb_strlen($term) < 2) {
+            return;
+        }
+
+        $resultCount = $result->getTotal();
+        $sessionToken = $event->getSalesChannelContext()->getToken();
+
         try {
             $this->connection->executeStatement(
-                'INSERT INTO `tdeh_zero_search` (`id`, `term`, `count`, `created_at`, `last_searched_at`)
-                 VALUES (:id, :term, 1, :now, :now)
-                 ON DUPLICATE KEY UPDATE `count` = `count` + 1, `last_searched_at` = :now',
+                'INSERT INTO `tdeh_search_log` (`id`, `session_token`, `term`, `result_count`, `created_at`)
+                 VALUES (:id, :session_token, :term, :result_count, :now)',
                 [
                     'id' => Uuid::randomBytes(),
+                    'session_token' => $sessionToken,
                     'term' => $term,
+                    'result_count' => $resultCount,
                     'now' => (new \DateTime())->format('Y-m-d H:i:s.v')
                 ]
             );
         } catch (\Throwable $e) {
-            // Prevent failure logging from degrading active storefront performance
         }
     }
 }

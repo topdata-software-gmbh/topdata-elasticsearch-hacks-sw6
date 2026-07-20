@@ -3,6 +3,7 @@
         "nav":                    {
             "mainTitle":         "Topdata ES",
             "zeroSearchResults": "Null-Suchergebnisse",
+            "searchStats":       "Suchstatistiken",
             "synonyms":          "Synonyme"
         },
         "topdata-es-zero-search": {
@@ -21,6 +22,25 @@
             "resetSuccess":         "Null-Suchergebnisse wurden zurückgesetzt.",
             "resetError":           "Fehler beim Zurücksetzen der Null-Suchergebnisse.",
             "exportError":          "Fehler beim Exportieren der Null-Suchergebnisse."
+        },
+        "topdata-es-search-stats": {
+            "title":                "Suchstatistiken",
+            "description":          "Statistiken über Suchanfragen von Kunden",
+            "listTitle":            "Suchbegriffe",
+            "columnTerm":           "Suchbegriff",
+            "columnCount":          "Suchanfragen gesamt",
+            "columnZeroCount":      "Null-Ergebnisse gesamt",
+            "columnAvgResultCount": "ø Trefferanzahl",
+            "columnLastSearchedAt": "Zuletzt gesucht",
+            "columnCreatedAt":      "Erstmals gesehen",
+            "buttonDownloadCsv":    "CSV herunterladen",
+            "buttonReset":          "Zurücksetzen",
+            "resetModalTitle":      "Statistiken zurücksetzen",
+            "resetModalBody":       "Sind Sie sicher, dass alle Suchstatistiken und unvollständigen Suchprotokolle gelöscht werden sollen? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "resetModalConfirm":    "Ja, alle zurücksetzen",
+            "resetSuccess":         "Suchstatistiken wurden zurückgesetzt.",
+            "resetError":           "Fehler beim Zurücksetzen der Suchstatistiken.",
+            "exportError":          "Fehler beim Exportieren der Suchstatistiken."
         },
         "topdata-es-synonym":     {
             "description":         "Verwaltung von Suchsynonymen für Elasticsearch",
