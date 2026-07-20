@@ -14,10 +14,22 @@ class Migration1752590000AddUpdatedAtToSynonymTable extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeStatement('
-            ALTER TABLE `topdata_es_synonym`
-            ADD COLUMN `updated_at` DATETIME(3) NULL AFTER `created_at`
-        ');
+        if (!$this->columnExists($connection, 'topdata_es_synonym', 'updated_at')) {
+            $connection->executeStatement('
+                ALTER TABLE `topdata_es_synonym`
+                ADD COLUMN `updated_at` DATETIME(3) NULL AFTER `created_at`
+            ');
+        }
+    }
+
+    private function columnExists(Connection $connection, string $table, string $column): bool
+    {
+        $result = $connection->fetchOne(
+            'SHOW COLUMNS FROM `' . $table . '` LIKE :column',
+            ['column' => $column]
+        );
+
+        return $result !== false;
     }
 
     public function updateDestructive(Connection $connection): void
