@@ -145,6 +145,23 @@ An implementation plan (`260717_1320__strip-leading-zeros-from-product-number-se
 - **Cache vs re-index:** Pure query-time changes (subscriber/decorator PHP code) need `php bin/console cache:clear` only. No `es:reset`/`es:index` is required unless the ES mapping changes.
 - **Plan staleness:** Always reconcile a plan with the current codebase state before implementing. Boost values, query types, and architecture may have shifted since the plan was written.
 
+## [2026-07-20] - Search Log Admin: `updated_at` Gotcha on `tdeh_search_log`
+
+### Context
+Creating the Search Log admin module listing page. After implementing the entity definition and admin component, the page crashed with `SQLSTATE[42S22]: Unknown column 'tdeh_search_log.updated_at'`.
+
+### Challenge: SW 6.7 Auto-Adds `UpdatedAtField` to All Entity Definitions
+The `tdeh_search_log` table was created without an `updated_at` column. SW 6.7's `EntityDefinition` base class auto-adds `UpdatedAtField` and `CreatedAtField` to every entity definition. The DAL generates SELECT queries including `updated_at` for every read — even though the definition doesn't define it explicitly.
+
+- **Error:** `SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tdeh_search_log.updated_at' in 'field list'`
+- **Fix:** Created `Migration1752710000AddUpdatedAtToSearchLogTable` with `ALTER TABLE tdeh_search_log ADD COLUMN updated_at DATETIME(3) NULL AFTER created_at`
+- **Lesson:** Even when creating an entity definition for a read-only table with no update semantics, you MUST add an `updated_at DATETIME(3) NULL` column because SW 6.7's DAL always queries it.
+
+### Key Takeaways
+- SW 6.7 entity definitions always include `updated_at` in SELECT queries, regardless of whether the field is explicitly listed in `defineFields()`.
+- Read-only entity tables still need an `updated_at` column. Without it, every DAL query fails.
+- Either add the column via migration, or override the DAL's behavior at a lower level (not recommended).
+
 ## [2026-07-20] - Synonym Admin: Edit Modal + Reusable Form Component + Context Menu Fixes
 
 ### Context
