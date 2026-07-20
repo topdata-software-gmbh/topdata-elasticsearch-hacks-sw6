@@ -2,7 +2,7 @@
 filename: "_ai/backlog/active/260720_2152__IMPLEMENTATION_PLAN__advanced_search_logging.md"
 title: "Advanced Search Logging and Fragment Consolidation"
 createdAt: 2026-07-20 21:52
-updatedAt: 2026-07-20 21:52
+updatedAt: 2026-07-20 22:30
 status: draft
 priority: high
 tags: [shopware, elasticsearch, analytics, sessions, database]
@@ -20,7 +20,7 @@ When suggestions are monitored, fast-typing users generate progressive fragments
 ## 2. Executive Summary
 This plan updates the search logging architecture to a **two-table transaction/aggregation design**:
 1. **Raw Log Table (`tdeh_search_log`)**: Stores every raw query instantly, containing the user session token, the query term, and the result count.
-2. **Aggregated Stats Table (`tdeh_search_stats`)**: Replaces the old `tdeh_zero_search` table, tracking clean consolidated search stats (total queries, zero-result counts, average result counts).
+2. **Aggregated Stats Table (`tdeh_search_stats`)**: New table tracking clean consolidated search stats (total queries, zero-result counts, average result counts). The existing `tdeh_zero_search` table and its data are preserved for backward compatibility.
 
 An asynchronous **Scheduled Task and CLI command** processes raw logs in the background. It groups logs by session token, analyzes chronological typing progressions using a Levenshtein edit-distance and prefix-matching heuristic, discards partial keystroke fragments, extracts the final intended search queries, aggregates them into the stats table, and purges the processed raw data.
 
@@ -37,7 +37,7 @@ An asynchronous **Scheduled Task and CLI command** processes raw logs in the bac
 ## 4. Implementation Phases
 
 ### Phase 1: Database Migration
-We will create a new migration to introduce the raw log table (`tdeh_search_log`) and the aggregated stats table (`tdeh_search_stats`), migrate any existing data from the deprecated `tdeh_zero_search` table, and drop the deprecated table.
+We will create a new migration to introduce the raw log table (`tdeh_search_log`) and the aggregated stats table (`tdeh_search_stats`). The existing `tdeh_zero_search` table and its data are preserved as-is.
 
 #### [NEW FILE] `src/Migration/Migration1752700000CreateSearchLogAndStatsTable.php`
 ```php
@@ -87,21 +87,7 @@ class Migration1752700000CreateSearchLogAndStatsTable extends MigrationStep
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
-        // 3. Migrate old data from tdeh_zero_search if it exists
-        try {
-            $hasOldTable = $connection->fetchOne("SHOW TABLES LIKE 'tdeh_zero_search'") !== false;
-            if ($hasOldTable) {
-                $connection->executeStatement('
-                    INSERT INTO `tdeh_search_stats` (`id`, `term`, `count`, `zero_count`, `avg_result_count`, `created_at`, `last_searched_at`)
-                    SELECT `id`, `term`, `count`, `count` AS `zero_count`, 0 AS `avg_result_count`, `created_at`, `last_searched_at`
-                    FROM `tdeh_zero_search`
-                    ON DUPLICATE KEY UPDATE `zero_count` = `tdeh_zero_search`.`count`;
-                ');
-                $connection->executeStatement('DROP TABLE IF EXISTS `tdeh_zero_search`');
-            }
-        } catch (\Throwable $e) {
-            // Suppress if empty or missing
-        }
+        // 3. Old tdeh_zero_search table is kept as-is; no data migration needed
     }
 
     public function updateDestructive(Connection $connection): void
@@ -478,12 +464,10 @@ class ConsolidateSearchLogsTaskHandler extends ScheduledTaskHandler
 
 ---
 
-### Phase 4: Data Abstraction Layer & Admin API Rebuilding
-We will delete the old `ZeroSearch` entity classes and create the new `SearchStats` entity classes so the Shopware Admin API can load the advanced metrics.
+### Phase 4: Data Abstraction Layer & Admin API
+We will create the new `SearchStats` entity classes for the Shopware Admin API to serve the new search metrics. The existing `ZeroSearch` entities and administration module are preserved for backward compatibility with the old `tdeh_zero_search` table.
 
-#### [DELETE] `src/Entity/ZeroSearch/ZeroSearchCollection.php`
-#### [DELETE] `src/Entity/ZeroSearch/ZeroSearchEntity.php`
-#### [DELETE] `src/Entity/ZeroSearch/ZeroSearchEntityDefinition.php`
+#### (ZeroSearch entity classes kept for backward compatibility)
 
 #### [NEW FILE] `src/Entity/SearchStats/SearchStatsEntity.php`
 ```php
@@ -631,7 +615,7 @@ class SearchStatsEntityDefinition extends EntityDefinition
 }
 ```
 
-#### [DELETE] `src/Controller/ZeroSearchController.php`
+#### (ZeroSearchController kept for backward compatibility)
 
 #### [NEW FILE] `src/Controller/SearchStatsController.php`
 ```php
@@ -926,9 +910,7 @@ class TopdataElasticsearchHacksSW6 extends Plugin
 ---
 
 ### Phase 5: Administration UI Updates
-We will remove the deprecated `topdata-es-zero-search` administration directory structure and introduce a clean, comprehensive `topdata-es-search-stats` dashboard.
-
-#### [DELETE] `src/Resources/app/administration/src/module/topdata-es-zero-search/`
+We will introduce a clean, comprehensive `topdata-es-search-stats` dashboard alongside the existing `topdata-es-zero-search` module.
 
 #### [NEW FILE] `src/Resources/app/administration/src/module/topdata-es-search-stats/page/search-stats-list/index.ts`
 ```typescript
@@ -1383,8 +1365,8 @@ planFile: "_ai/backlog/active/260720_2152__IMPLEMENTATION_PLAN__advanced_search_
 project: "topdata-elasticsearch-hacks-sw6"
 status: completed
 filesCreated: 10
-filesModified: 6
-filesDeleted: 4
+filesModified: 7
+filesDeleted: 0
 tags: [logging, search, processing, analytics]
 documentType: IMPLEMENTATION_REPORT
 ---
@@ -1415,11 +1397,7 @@ The search tracking system has been successfully upgraded from basic zero-result
 - `README.md`
 
 ### Deleted
-- `src/Entity/ZeroSearch/ZeroSearchCollection.php`
-- `src/Entity/ZeroSearch/ZeroSearchEntity.php`
-- `src/Entity/ZeroSearch/ZeroSearchEntityDefinition.php`
-- `src/Controller/ZeroSearchController.php`
-- `src/Resources/app/administration/src/module/topdata-es-zero-search/`
+None. Old ZeroSearch entity files, controller, and admin module are preserved for backward compatibility.
 
 ## 3. Key Changes
 - **Typo & Substring Heuristic:** Leverages Levenshtein distance and prefix checks to identify corrections during live search streams.
