@@ -20,10 +20,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *   1. productNumber exact              (2,000,000) — product number equals the term exactly
  *   1b.productNumber stripped exact     (1,500,000) — exact match on leading-zero-stripped digits (e.g. "4000" for "004000")
  *   2. name match_phrase                 (1,000,000) — exact phrase match in analyzed name
- *   3. name match AND                    (  500,000) — all tokens present in analyzed name
- *   4. name delimiter AND                (  200,000) — all tokens present in delimiter-analyzed name
- *   5. name wildcard                     (   15,000) — substring match in raw keyword name
- *   6. name prefix                       (    1,100) — prefix match in raw keyword name
+ *   3. topseller flag                    (  750,000) — product marked as topseller (customFields.topdata_is_topseller)
+ *   4. name match AND                    (  500,000) — all tokens present in analyzed name
+ *   5. name delimiter AND                (  200,000) — all tokens present in delimiter-analyzed name
+ *   6. name wildcard                     (   15,000) — substring match in raw keyword name
+ *   7. name prefix                       (    1,100) — prefix match in raw keyword name
  *
  * Product-number boosts are intentionally higher than name-field boosts so that
  * a product whose article number exactly matches the search term always
@@ -185,6 +186,15 @@ class ElasticsearchSearchSubscriber implements EventSubscriberInterface
                     new MatchPhraseQuery($analyzedField, $lowerTerm),
                     ['boost' => 1_000_000.0]
                 ),
+                BoolQuery::SHOULD
+            );
+
+            // ---- Topseller boost: products flagged as topseller (customFields.topdata_is_topseller)
+            //      get a significant additive boost so they rank above non-topsellers
+            //      with comparable name matches. The field is a boolean custom field
+            //      stored per-language in ES as customFields.{languageId}.topdata_is_topseller.
+            $search->addQuery(
+                new TermQuery(sprintf('customFields.%s.topdata_is_topseller', $languageId), true, ['boost' => 750_000.0]),
                 BoolQuery::SHOULD
             );
 
