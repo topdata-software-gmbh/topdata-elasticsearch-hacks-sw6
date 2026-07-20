@@ -15,25 +15,28 @@ class Migration1716652800CreateZeroSearchTable extends MigrationStep
     public function update(Connection $connection): void
     {
         $connection->executeStatement('
-            CREATE TABLE IF NOT EXISTS `topdata_es_zero_search` (
+            CREATE TABLE IF NOT EXISTS `tdeh_zero_search` (
                 `id` BINARY(16) NOT NULL,
                 `term` VARCHAR(255) NOT NULL,
                 `count` INT NOT NULL DEFAULT 1,
                 `created_at` DATETIME(3) NOT NULL,
                 `last_searched_at` DATETIME(3) NULL,
+                `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE KEY `uniq.topdata_es_zero_search.term` (`term`)
+                UNIQUE KEY `uniq.tdeh_zero_search.term` (`term`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
         $connection->executeStatement('
-            CREATE TABLE IF NOT EXISTS `topdata_es_synonym` (
+            CREATE TABLE IF NOT EXISTS `tdeh_synonym` (
                 `id` BINARY(16) NOT NULL,
                 `term` VARCHAR(255) NOT NULL,
                 `synonyms` TEXT NOT NULL,
+                `scope` VARCHAR(50) NOT NULL DEFAULT "global",
                 `created_at` DATETIME(3) NOT NULL,
+                `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE KEY `uniq.topdata_es_synonym.term` (`term`)
+                UNIQUE KEY `uniq.tdeh_synonym.term` (`term`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }
