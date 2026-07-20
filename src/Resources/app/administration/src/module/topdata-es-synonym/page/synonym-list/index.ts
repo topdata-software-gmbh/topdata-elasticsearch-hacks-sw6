@@ -1,4 +1,5 @@
 import template from './synonym-list.html.twig';
+import '../../component/synonym-form';
 
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -22,10 +23,17 @@ Component.register('topdata-es-synonym-list', {
             limit: 25,
             activeModal: false,
             currentEntity: null,
+            showDeleteModal: false,
+            itemToDelete: null,
         };
     },
 
     computed: {
+        deleteConfirmText() {
+            if (!this.itemToDelete) return '';
+            return this.$t('TopdataElasticsearchHacksSW6.topdata-es-synonym.deleteConfirmText', { term: this.itemToDelete.term });
+        },
+
         repository() {
             return this.repositoryFactory.create('tdeh_synonym');
         },
@@ -54,12 +62,6 @@ Component.register('topdata-es-synonym-list', {
             }];
         },
 
-        activeModalTitle() {
-            if (!this.currentEntity) return '';
-            return this.currentEntity.isNew()
-                ? this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleAdd')
-                : this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.modalTitleEdit');
-        },
     },
 
     mounted() {
@@ -103,8 +105,10 @@ Component.register('topdata-es-synonym-list', {
         },
 
         onEditSynonym(item) {
-            this.currentEntity = item;
-            this.activeModal = true;
+            this.repository.get(item.id).then((entity) => {
+                this.currentEntity = entity;
+                this.activeModal = true;
+            });
         },
 
         onCloseModal() {
@@ -113,19 +117,25 @@ Component.register('topdata-es-synonym-list', {
             this.getList();
         },
 
-        onSaveSynonym() {
-            if (!this.currentEntity.term.trim() || !this.currentEntity.synonyms.trim()) {
-                return;
-            }
+        onShowDeleteModal(item) {
+            this.itemToDelete = item;
+            this.showDeleteModal = true;
+        },
 
-            this.isLoading = true;
-            this.repository.save(this.currentEntity).then(() => {
+        onCloseDeleteModal() {
+            this.showDeleteModal = false;
+            this.itemToDelete = null;
+        },
+
+        onConfirmDelete() {
+            this.repository.delete(this.itemToDelete.id).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.saveSuccess'),
+                    message: this.$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.deleteSuccess'),
                 });
-                this.onCloseModal();
+                this.onCloseDeleteModal();
+                this.getList();
             }).catch(() => {
-                this.isLoading = false;
+                this.onCloseDeleteModal();
             });
         },
     },

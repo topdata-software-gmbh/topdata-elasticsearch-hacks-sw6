@@ -144,3 +144,44 @@ An implementation plan (`260717_1320__strip-leading-zeros-from-product-number-se
 - **`buildTermQuery` is the right extension point for matching:** Its return value becomes the `MUST` clause. Decorating it lets you add alternative match paths without restructuring the entire search.
 - **Cache vs re-index:** Pure query-time changes (subscriber/decorator PHP code) need `php bin/console cache:clear` only. No `es:reset`/`es:index` is required unless the ES mapping changes.
 - **Plan staleness:** Always reconcile a plan with the current codebase state before implementing. Boost values, query types, and architecture may have shifted since the plan was written.
+
+## [2026-07-20] - Synonym Admin: Edit Modal + Reusable Form Component + Context Menu Fixes
+
+### Context
+Extended the synonym admin module to support editing existing synonyms (previously create-only). Extracted the inline modal form into a reusable `topdata-es-synonym-form` component. Fixed context menu actions and delete confirmation text.
+
+### Challenge 1: Entity Save on Edit Required Fresh Proxy
+`onEditSynonym` received the entity from `sw-entity-listing`'s `@edit` event, but saving that entity via `repository.save()` failed silently because the listing's entity proxy wasn't a proper writable entity.
+
+- **Fix:** Use `this.repository.get(item.id)` in `onEditSynonym` to fetch a fresh, writable entity proxy. This ensures `save()` triggers a PATCH request.
+- **Lesson:** Entity objects from `sw-entity-listing` row slots are not guaranteed to be writable proxies. Always fetch via `repository.get(id)` before editing.
+
+### Challenge 2: `detailRoute` Causes Route Navigation Instead of Modal
+Setting `:detail-route` on `sw-entity-listing` makes the Edit context menu item appear, but clicking it triggers `$router.push()` — which reloads the list page instead of opening the modal. The `@edit` event fires but is irrelevant because the component unmounts.
+
+- **Fix:** Use the `#actions` slot instead of `:allow-edit` / `:detail-route`. The `#actions` slot replaces all built-in context menu items, so both Edit and Delete must be added manually.
+- **Lesson:** In SW 6.7's `sw-entity-listing`, `:allow-edit="true"` only shows the Edit button if `detailRoute` is also set. With `detailRoute`, clicking edit performs route navigation, not a modal. For modal-based editing, use `#actions` slot with custom `<sw-context-menu-item>` elements.
+
+### Challenge 3: `#actions` Slot Replaces All Default Items
+Adding an `#actions` slot with only an Edit button caused the built-in Delete button to disappear.
+
+- **Fix:** Add both Edit and Delete `<sw-context-menu-item>` elements in the `#actions` slot. For Delete, implement custom confirmation using `sw-confirm-modal` with `danger` variant and manual `repository.delete(id)` call.
+- **Lesson:** The `#actions` slot in `sw-entity-listing` **replaces**, not extends, the default context menu items. When using it, you must provide all desired actions.
+
+### Challenge 4: `$tc()` vs `$t()` for Named Parameter Interpolation in Vue I18n v9
+Building the delete confirmation text `"Are you sure you want to delete the synonym \"{term}\"?"` failed in multiple attempts:
+1. `{term}` in snippet + `$tc(key, 0, { term: value })` → rendered empty `""` (replacement not passed correctly)
+2. `%term%` in snippet + same `$tc` call → showed literal `"%term%"` (Vue I18n v9 doesn't use `%` syntax)
+3. `{term}` in snippet + computed with `$tc(key).replace('{term}', value)` → still empty (`$tc` already consumed `{term}` before `.replace()`)
+4. **Working fix:** `{term}` in snippet + computed with `$t(key, { term: value })`. `$t()` is designed for simple message interpolation with named parameters in Vue I18n v9.
+
+- **Lessons:**
+  - **In Vue I18n v9 (SW 6.7), `$tc()` is for pluralization, `$t()` for interpolation.** Named placeholders use `{variable}` syntax and must be passed as the second argument to `$t(key, { variable: value })`.
+  - `$tc(key, count, replacements)` does NOT support the same interpolation signature as `$t(key, replacements)` — the replacements parameter to `$tc` may not be handled the same way.
+  - Always test with a console-watch or by looking at the raw output vs the expected value to distinguish "placeholder was consumed but value was empty" from "placeholder was not recognized."
+
+### Key Takeaways
+- **Editing in `sw-entity-listing`:** For modal-based editing, use `#actions` slot with custom items. Fetch entities fresh via `repository.get(id)` before editing. `detailRoute` triggers router navigation, not modal.
+- **`$t()` vs `$tc()` in SW 6.7:** Use `$t(key, { variable: value })` for message interpolation with named parameters. Reserve `$tc()` for pluralization only.
+- **`#actions` slot replaces defaults:** When you define `#actions` on `sw-entity-listing`, you must include all desired context menu items (both Edit and Delete).
+- **Reusable form components in Shopware admin:** Extract inline modal forms into separate components registered with `Component.register()`. The component should accept `entity` and `repository` as props, handle `save()` internally, and emit `save`/`cancel` events.

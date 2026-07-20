@@ -1,0 +1,52 @@
+<sw-modal
+    :title="modalTitle"
+    @modal-close="onCancel"
+>
+    <sw-text-field
+        v-model="entity.term"
+        required
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelTerm')"
+    ></sw-text-field>
+
+    <sw-textarea-field
+        v-model="entity.synonyms"
+        required
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelSynonyms')"
+        :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
+    ></sw-textarea-field>
+
+    <sw-field
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelScope')"
+        class="topdata-es-synonym-scope-group"
+    >
+        <sw-button-group split-button="false">
+            <sw-button
+                :variant="entity.scope === 'product' ? 'primary' : 'ghost'"
+                @click="entity.scope = 'product'"
+            >
+                {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}
+            </sw-button>
+            <sw-button
+                :variant="entity.scope === 'category' ? 'primary' : 'ghost'"
+                @click="entity.scope = 'category'"
+            >
+                {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}
+            </sw-button>
+            <sw-button
+                :variant="entity.scope === 'global' ? 'primary' : 'ghost'"
+                @click="entity.scope = 'global'"
+            >
+                {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeBoth') }}
+            </sw-button>
+        </sw-button-group>
+    </sw-field>
+
+    <template #modal-footer>
+        <sw-button size="small" @click="onCancel">
+            {{ $tc('global.default.cancel') }}
+        </sw-button>
+        <sw-button variant="primary" size="small" @click="onSave" :isLoading="isLoading">
+            {{ $tc('global.default.save') }}
+        </sw-button>
+    </template>
+</sw-modal>

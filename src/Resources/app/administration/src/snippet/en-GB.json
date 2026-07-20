@@ -41,7 +41,9 @@
             "scopeProduct":        "Products Only",
             "scopeCategory":       "Categories Only",
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
-            "saveSuccess":         "Synonym saved successfully."
+            "saveSuccess":         "Synonym saved successfully.",
+            "deleteSuccess":       "Synonym deleted successfully.",
+            "deleteConfirmText":   "Are you sure you want to delete the synonym \"{term}\"?"
         }
     }
 }

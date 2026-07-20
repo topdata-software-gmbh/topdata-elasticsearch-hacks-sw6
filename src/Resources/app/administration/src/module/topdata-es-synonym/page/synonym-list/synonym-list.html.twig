@@ -19,7 +19,7 @@
             :show-settings="true"
             :show-selection="false"
             :allow-view="false"
-            :allow-edit="true"
+            :allow-edit="false"
             :allow-delete="true"
             :allow-inline-edit="false"
             :full-page="true"
@@ -28,7 +28,6 @@
             :is-loading="isLoading"
             @page-change="onPageChange"
             @column-sort="onSortColumn"
-            @edit="onEditSynonym"
         >
             <template #column-scope="{ item }">
                 <sw-label v-if="item.scope === 'global'" variant="neutral" size="medium">
@@ -45,60 +44,33 @@
             <template #column-createdAt="{ item }">
                 <sw-time-ago :date="item.createdAt" :date-time-format="{ month: '2-digit', day: '2-digit' }" />
             </template>
+
+            <template #actions="{ item }">
+                <sw-context-menu-item @click="onEditSynonym(item)">
+                    {{ $tc('global.default.edit') }}
+                </sw-context-menu-item>
+                <sw-context-menu-item variant="danger" @click="onShowDeleteModal(item)">
+                    {{ $tc('global.default.delete') }}
+                </sw-context-menu-item>
+            </template>
         </sw-entity-listing>
 
-        <sw-modal
+        <sw-confirm-modal
+            v-if="showDeleteModal"
+            :title="$tc('global.default.delete')"
+            :text="deleteConfirmText"
+            :confirmButtonVariant="'danger'"
+            @confirm="onConfirmDelete"
+            @close="onCloseDeleteModal"
+            @cancel="onCloseDeleteModal"
+        />
+
+        <topdata-es-synonym-form
             v-if="activeModal"
-            :title="activeModalTitle"
-            @modal-close="onCloseModal"
-        >
-            <sw-text-field
-                v-model="currentEntity.term"
-                required
-                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelTerm')"
-            ></sw-text-field>
-
-            <sw-textarea-field
-                v-model="currentEntity.synonyms"
-                required
-                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelSynonyms')"
-                :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.placeholderSynonyms')"
-            ></sw-textarea-field>
-
-            <sw-field
-                :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.labelScope')"
-                class="topdata-es-synonym-scope-group"
-            >
-                <sw-button-group split-button="false">
-                    <sw-button
-                        :variant="currentEntity.scope === 'product' ? 'primary' : 'ghost'"
-                        @click="currentEntity.scope = 'product'"
-                    >
-                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeProduct') }}
-                    </sw-button>
-                    <sw-button
-                        :variant="currentEntity.scope === 'category' ? 'primary' : 'ghost'"
-                        @click="currentEntity.scope = 'category'"
-                    >
-                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeCategory') }}
-                    </sw-button>
-                    <sw-button
-                        :variant="currentEntity.scope === 'global' ? 'primary' : 'ghost'"
-                        @click="currentEntity.scope = 'global'"
-                    >
-                        {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-synonym.scopeBoth') }}
-                    </sw-button>
-                </sw-button-group>
-            </sw-field>
-
-            <template #modal-footer>
-                <sw-button size="small" @click="onCloseModal">
-                    {{ $tc('global.default.cancel') }}
-                </sw-button>
-                <sw-button variant="primary" size="small" @click="onSaveSynonym">
-                    {{ $tc('global.default.save') }}
-                </sw-button>
-            </template>
-        </sw-modal>
+            :entity="currentEntity"
+            :repository="repository"
+            @save="onCloseModal"
+            @cancel="onCloseModal"
+        />
     </template>
 </sw-page>

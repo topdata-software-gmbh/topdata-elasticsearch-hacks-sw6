@@ -40,7 +40,9 @@
             "scopeProduct":        "Nur Produkte",
             "scopeCategory":       "Nur Kategorien",
             "placeholderSynonyms": "synonym1, synonym2, synonym3",
-            "saveSuccess":         "Synonym erfolgreich gespeichert."
+            "saveSuccess":         "Synonym erfolgreich gespeichert.",
+            "deleteSuccess":       "Synonym erfolgreich gelöscht.",
+            "deleteConfirmText":   "Sind Sie sicher, dass das Synonym \"{term}\" gelöscht werden soll?"
         }
     }
 }
