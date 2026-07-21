@@ -2,57 +2,7 @@
     "TopdataElasticsearchHacksSW6": {
         "nav":                    {
             "mainTitle":         "Topdata ES",
-            "zeroSearchResults": "Zero Search Results",
-            "searchStats":       "Search Statistics",
-            "searchLog":         "Search Log",
             "synonyms":          "Synonyms"
-        },
-        "topdata-es-zero-search": {
-            "title":                "Zero Search Results",
-            "description":          "Manage zero-result search terms",
-            "listTitle":            "Search Terms",
-            "columnTerm":           "Search Term",
-            "columnCount":          "Count",
-            "columnLastSearchedAt": "Last Searched",
-            "columnCreatedAt":      "First Seen",
-            "buttonDownloadCsv":    "Download CSV",
-            "buttonReset":          "Reset",
-            "resetModalTitle":      "Reset Zero Search Results",
-            "resetModalBody":       "Are you sure you want to delete all zero search results? This action cannot be undone.",
-            "resetModalConfirm":    "Yes, reset all",
-            "resetSuccess":         "Zero search results have been reset.",
-            "resetError":           "Failed to reset zero search results.",
-            "exportError":          "Failed to export zero search results."
-        },
-        "topdata-es-search-stats": {
-            "title":                "Search Statistics",
-            "description":          "Detailed customer search statistics",
-            "listTitle":            "Search Terms",
-            "columnTerm":           "Search Term",
-            "columnCount":          "Total Searches",
-            "columnZeroCount":      "Zero Result Searches",
-            "columnAvgResultCount": "ø Hit Count",
-            "columnLastSearchedAt": "Last Searched",
-            "columnCreatedAt":      "First Seen",
-            "buttonDownloadCsv":    "Download CSV",
-            "buttonReset":          "Reset",
-            "resetModalTitle":      "Reset Search Statistics",
-            "resetModalBody":       "Are you sure you want to delete all search statistics and pending search logs? This action cannot be undone.",
-            "resetModalConfirm":    "Yes, reset all",
-            "resetSuccess":         "Search statistics have been reset.",
-            "resetError":           "Failed to reset search statistics.",
-            "exportError":          "Failed to export search statistics."
-        },
-        "topdata-es-search-log": {
-            "title":                "Search Log",
-            "description":          "Live view of raw search queries",
-            "columnTerm":           "Search Term",
-            "columnResultCount":    "Results",
-            "columnSessionToken":   "Session",
-            "columnCreatedAt":      "Searched At",
-            "buttonRefresh":        "Refresh",
-            "searchPlaceholder":    "Filter by search term…",
-            "transientNotice":      "This log is transient. Raw search queries are automatically consolidated and purged hourly by the background task. Data shown here is a live snapshot and may disappear after the next consolidation run."
         },
         "topdata-es-synonym":     {
             "title":               "Synonyms",
