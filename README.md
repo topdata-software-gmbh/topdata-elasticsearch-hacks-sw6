@@ -8,6 +8,8 @@ This plugin optimizes Elasticsearch tokenization on Shopware 6.7 to allow better
 ## Features
 * Globally registers a `word_delimiter_graph` token filter in Elasticsearch settings.
 * Overrides default language analyzers (`sw_german_analyzer`, `sw_english_analyzer`, `sw_default_analyzer`) to split terms dynamically without breaking default stemmers.
+* **Optimized Tokenization Strategy (Edge N-Gram):** Automatically converts Shopware's default `sw_ngram_tokenizer` from standard `ngram` (mid-word matching) to `edge_ngram` (prefix-only matching). This reduces false-positive noise and optimizes Elasticsearch server RAM and index disk utilization.
+* **French Language Support:** Custom synonym mappings are fully registered in the `sw_french_analyzer`, providing native synonym search matching for Swiss French (`fr-CH`) product queries.
 * **Multi-Field Mapping Architecture (Option B):** Isolates word-delimiter splitting to a dedicated `.delimiter` sub-field to protect clean search field precision.
 * **Analyzed Query Boosting**: Employs analyzed `MatchPhraseQuery`, `MatchQuery` (AND operator), fallback `.delimiter` matches, and custom standalone word wildcard queries to ensure exact matches rank higher than broad compound matches (e.g. "Papierhandtücher" ranks higher than "Papierhandtücher-Spender").
 * **Synonym Suite**: Dynamically tracks failed storefront searches and offers a full suite of administrative CLI utilities to manage search synonym mappings.

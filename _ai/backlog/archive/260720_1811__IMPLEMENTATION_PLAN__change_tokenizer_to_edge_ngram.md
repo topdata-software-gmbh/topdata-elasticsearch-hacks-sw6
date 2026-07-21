@@ -3,7 +3,8 @@ filename: "_ai/backlog/active/260720_1811__IMPLEMENTATION_PLAN__change_tokenizer
 title: "Change Search Tokenizer from N-Gram to Edge N-Gram"
 createdAt: 2026-07-20 18:11
 updatedAt: 2026-07-20 18:11
-status: in-progress
+status: completed
+completedAt: 2026-07-21 09:52
 priority: high
 tags: [elasticsearch, search, performance, swiss-multilingual, tokenization]
 estimatedComplexity: moderate
@@ -194,6 +195,7 @@ updatedAt: 2026-07-20 18:11
 planFile: "_ai/backlog/active/260720_1811__IMPLEMENTATION_PLAN__change_tokenizer_to_edge_ngram.md"
 project: "topdata-elasticsearch-hacks-sw6"
 status: completed
+completedAt: 2026-07-21 09:52
 filesCreated: 0
 filesModified: 2
 filesDeleted: 0
