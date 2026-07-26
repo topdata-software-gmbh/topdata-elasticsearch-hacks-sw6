@@ -27,6 +27,7 @@ class TopdataElasticsearchHacksSW6 extends Plugin
 
         $connection = $this->container->get(Connection::class);
         $tables = [
+            'tdeh_search_suggestion',
             'tdeh_synonym',
             'tdeh_zero_search',
             'topdata_es_synonym',

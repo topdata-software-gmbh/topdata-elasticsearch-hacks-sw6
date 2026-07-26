@@ -1,0 +1,56 @@
+{% block topdata_es_suggestion_form %}
+<sw-modal
+    :title="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.formTitle')"
+    @modal-close="$emit('close')"
+    variant="small"
+>
+    <sw-text-field
+        v-model:value="entity.term"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.term')"
+        :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.termPlaceholder')"
+        required
+    />
+
+    <sw-select-field
+        v-model:value="entity.targetType"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.targetType')"
+    >
+        <option value="category">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.type.category') }}</option>
+        <option value="device">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.type.device') }}</option>
+        <option value="product">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.type.product') }}</option>
+        <option value="custom">{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.type.custom') }}</option>
+    </sw-select-field>
+
+    <sw-text-field
+        v-model:value="entity.targetUrl"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.targetUrl')"
+        :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.targetUrlPlaceholder')"
+    />
+
+    <sw-textarea-field
+        v-model:value="targetParamsFormatted"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.targetParams')"
+        :placeholder="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.targetParamsPlaceholder')"
+    />
+
+    <sw-number-field
+        v-model:value="entity.priority"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.priority')"
+        :placeholder="0"
+    />
+
+    <sw-checkbox-field
+        v-model:value="entity.active"
+        :label="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.field.active')"
+    />
+
+    <template #modal-footer>
+        <sw-button @click="$emit('close')">
+            {{ $tc('global.default.cancel') }}
+        </sw-button>
+        <sw-button variant="primary" @click="onSave" :is-loading="isLoading">
+            {{ $tc('global.default.save') }}
+        </sw-button>
+    </template>
+</sw-modal>
+{% endblock %}

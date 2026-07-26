@@ -27,6 +27,38 @@
             "deleteConfirmText":   "Sind Sie sicher, dass das Synonym \"{term}\" gelöscht werden soll?",
             "buttonDownloadCsv":   "CSV herunterladen",
             "exportError":         "Fehler beim Exportieren der Synonyme."
+        },
+        "topdata-es-suggestion": {
+            "title": "Suchvorschläge",
+            "description": "Verwaltung der manuellen Suchvorschläge",
+            "addButton": "Suchvorschlag anlegen",
+            "emptyState": "Keine Suchvorschläge vorhanden",
+            "formTitle": "Suchvorschlag bearbeiten",
+            "column": {
+                "term": "Suchbegriff",
+                "targetType": "Typ",
+                "targetUrl": "Ziel-URL",
+                "priority": "Priorität",
+                "active": "Aktiv",
+                "createdAt": "Erstellt"
+            },
+            "field": {
+                "term": "Suchbegriff",
+                "termPlaceholder": "z.B. 'Papier A4 günstig'",
+                "targetType": "Ziel-Typ",
+                "targetUrl": "Ziel-URL",
+                "targetUrlPlaceholder": "z.B. /navigation/... oder /detail/...",
+                "targetParams": "Parameter (JSON)",
+                "targetParamsPlaceholder": "{\"filters\": {...}}",
+                "priority": "Priorität",
+                "active": "Aktiv"
+            },
+            "type": {
+                "category": "Kategorie",
+                "device": "Gerät (TopFinder)",
+                "product": "Produkt",
+                "custom": "Benutzerdefiniert"
+            }
         }
     }
 }

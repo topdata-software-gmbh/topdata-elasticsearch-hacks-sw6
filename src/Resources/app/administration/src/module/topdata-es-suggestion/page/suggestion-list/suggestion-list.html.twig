@@ -1,0 +1,62 @@
+{% block topdata_es_suggestion_list %}
+<div class="topdata-es-suggestion-list">
+    <sw-page class="topdata-es-suggestion-list-page">
+        <template #smart-bar-header>
+            <h2>{{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.title') }}</h2>
+        </template>
+
+        <template #smart-bar-actions>
+            <sw-button variant="primary" @click="onAddSuggestion">
+                {{ $tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.addButton') }}
+            </sw-button>
+        </template>
+
+        <template #content>
+            <sw-entity-listing
+                v-if="items && total > 0"
+                :repository="repository"
+                :dataSource="items"
+                :columns="columns"
+                :is-loading="isLoading"
+                :show-settings="false"
+                :show-selection="false"
+                :allow-view="false"
+            >
+                <template #column-targetType="{ item }">
+                    <sw-label>{{ item.targetType }}</sw-label>
+                </template>
+
+                <template #column-active="{ item }">
+                    <sw-icon v-if="item.active" name="regular-checkmark" color="#37d6b5" />
+                    <sw-icon v-else name="regular-times" color="#de294c" />
+                </template>
+
+                <template #column-createdAt="{ item }">
+                    <sw-time-ago :date="item.createdAt" />
+                </template>
+
+                <template #actions="{ item }">
+                    <sw-context-menu-item @click="onEditSuggestion(item)">
+                        {{ $tc('global.default.edit') }}
+                    </sw-context-menu-item>
+                    <sw-context-menu-item variant="danger" @click="onDeleteSuggestion(item)">
+                        {{ $tc('global.default.delete') }}
+                    </sw-context-menu-item>
+                </template>
+            </sw-entity-listing>
+
+            <sw-empty-state v-else-if="!isLoading" :title="$tc('TopdataElasticsearchHacksSW6.topdata-es-suggestion.emptyState')" />
+
+            <sw-loader v-if="isLoading" />
+
+            <topdata-es-suggestion-form
+                v-if="showFormModal"
+                :entity="currentEntity"
+                :repository="repository"
+                @save="onCloseFormModal"
+                @close="onCloseFormModal"
+            />
+        </template>
+    </sw-page>
+</div>
+{% endblock %}

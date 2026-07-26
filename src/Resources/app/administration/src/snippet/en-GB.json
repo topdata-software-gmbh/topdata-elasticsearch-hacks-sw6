@@ -28,6 +28,38 @@
             "deleteConfirmText":   "Are you sure you want to delete the synonym \"{term}\"?",
             "buttonDownloadCsv":   "Download CSV",
             "exportError":         "Failed to export synonyms."
+        },
+        "topdata-es-suggestion": {
+            "title": "Search Suggestions",
+            "description": "Manage curated search suggestions",
+            "addButton": "Add suggestion",
+            "emptyState": "No search suggestions yet",
+            "formTitle": "Edit search suggestion",
+            "column": {
+                "term": "Search term",
+                "targetType": "Type",
+                "targetUrl": "Target URL",
+                "priority": "Priority",
+                "active": "Active",
+                "createdAt": "Created"
+            },
+            "field": {
+                "term": "Search term",
+                "termPlaceholder": "e.g. 'cheap printer paper'",
+                "targetType": "Target type",
+                "targetUrl": "Target URL",
+                "targetUrlPlaceholder": "e.g. /navigation/... or /detail/...",
+                "targetParams": "Parameters (JSON)",
+                "targetParamsPlaceholder": "{\"filters\": {...}}",
+                "priority": "Priority",
+                "active": "Active"
+            },
+            "type": {
+                "category": "Category",
+                "device": "Device (TopFinder)",
+                "product": "Product",
+                "custom": "Custom"
+            }
         }
     }
 }
