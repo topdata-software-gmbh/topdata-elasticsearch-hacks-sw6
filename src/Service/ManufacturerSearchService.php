@@ -11,7 +11,7 @@ class ManufacturerSearchService
     public function search(string $query, int $limit = 5): array
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select(['m.id', 'mt.name', 'LOWER(mt.name) as name_lower'])
+        $qb->select('m.id', 'mt.name', 'LOWER(mt.name) as name_lower')
             ->from('product_manufacturer', 'm')
             ->innerJoin('m', 'product_manufacturer_translation', 'mt', 'mt.product_manufacturer_id = m.id')
             ->where('mt.name LIKE :query')
