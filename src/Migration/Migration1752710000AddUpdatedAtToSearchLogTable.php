@@ -14,10 +14,14 @@ class Migration1752710000AddUpdatedAtToSearchLogTable extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeStatement('
-            ALTER TABLE `tdeh_search_log`
-            ADD COLUMN `updated_at` DATETIME(3) NULL AFTER `created_at`
-        ');
+        $schemaManager = $connection->createSchemaManager();
+        $columns = $schemaManager->listTableColumns('tdeh_search_log');
+        if (!isset($columns['updated_at'])) {
+            $connection->executeStatement('
+                ALTER TABLE `tdeh_search_log`
+                ADD COLUMN `updated_at` DATETIME(3) NULL AFTER `created_at`
+            ');
+        }
     }
 
     public function updateDestructive(Connection $connection): void
