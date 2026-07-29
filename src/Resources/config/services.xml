@@ -146,5 +146,23 @@
 
         <!-- Manufacturer Search Service -->
         <service id="Topdata\TopdataElasticsearchHacksSW6\Service\ManufacturerSearchService" autowire="true"/>
+
+        <!-- Search Providers (tagged for enhanced-search overlay) -->
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Search\ProductSearchProvider" autowire="true">
+            <argument type="service" key="$productRepository" id="sales_channel.product.repository"/>
+            <tag name="topdata_enhanced_search.search_provider"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Search\CategorySearchProvider" autowire="true">
+            <tag name="topdata_enhanced_search.search_provider"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Search\ManufacturerSearchProvider" autowire="true">
+            <tag name="topdata_enhanced_search.search_provider"/>
+        </service>
+
+        <service id="Topdata\TopdataElasticsearchHacksSW6\Search\SearchSuggestionProvider" autowire="true">
+            <tag name="topdata_enhanced_search.search_provider"/>
+        </service>
     </services>
 </container>

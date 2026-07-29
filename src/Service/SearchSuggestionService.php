@@ -11,7 +11,13 @@ class SearchSuggestionService
     public function search(string $query, int $limit = 5): array
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select(['id', 'term', 'target_type', 'target_url', 'target_params'])
+        $qb->select(
+            'id',
+            'term',
+            'target_type',
+            'target_url',
+            'target_params',
+        )
             ->from('tdeh_search_suggestion')
             ->where('active = 1')
             ->andWhere('term LIKE :query')
