@@ -1,5 +1,7 @@
 # Topdata Elasticsearch Hacks SW6
 
+> **⚠️ Deprecated** — This plugin is no longer receiving updates. All functionality has been moved to the [`topdata-enhanced-search-sw6`](https://github.com/topdata/topdata-enhanced-search-sw6) plugin.
+
 ![Plugin Icon](src/Resources/config/plugin.png)
 
 ## Overview
