@@ -6,6 +6,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -17,6 +18,7 @@ class ProductSearchProvider implements SearchProviderInterface
     public function __construct(
         private SalesChannelRepository $productRepository,
         private UrlGeneratorInterface $router,
+        private CurrencyFormatter $currencyFormatter,
     ) {}
 
     public function getType(): string
@@ -56,7 +58,12 @@ class ProductSearchProvider implements SearchProviderInterface
                 'imageUrl' => $imageUrl,
                 'price' => $price ? number_format($price->getUnitPrice(), 2, '.', '') : null,
                 'priceFormatted' => $price
-                    ? number_format($price->getUnitPrice(), 2, ',', '.') . ' ' . $context->getCurrency()->getSymbol()
+                    ? $this->currencyFormatter->formatCurrencyByLanguage(
+                        $price->getUnitPrice(),
+                        $context->getCurrency()->getIsoCode(),
+                        $context->getLanguageId(),
+                        $context->getContext()
+                    )
                     : null,
             ];
         }
