@@ -22,10 +22,10 @@ class ManufacturerSearchProvider implements SearchProviderInterface
 
     public function search(string $term, SalesChannelContext $context, int $limit): array
     {
-        $rows = $this->manufacturerSearchService->search($term, $limit);
+        $result = $this->manufacturerSearchService->search($term, $limit);
 
         $items = [];
-        foreach ($rows as $row) {
+        foreach ($result['items'] as $row) {
             $items[] = [
                 'id' => $row['id'],
                 'name' => $row['name'],
@@ -33,6 +33,9 @@ class ManufacturerSearchProvider implements SearchProviderInterface
             ];
         }
 
-        return $items;
+        return [
+            'items' => $items,
+            'total' => $result['total'],
+        ];
     }
 }

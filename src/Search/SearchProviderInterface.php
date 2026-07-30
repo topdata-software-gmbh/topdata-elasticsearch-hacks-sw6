@@ -8,5 +8,8 @@ interface SearchProviderInterface
 {
     public function getType(): string;
 
+    /**
+     * @return array{items: array, total: int}
+     */
     public function search(string $term, SalesChannelContext $context, int $limit): array;
 }

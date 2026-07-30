@@ -72,6 +72,9 @@ class ProductSearchProvider implements SearchProviderInterface
             ];
         }
 
-        return $items;
+        return [
+            'items' => $items,
+            'total' => $result->getTotal(),
+        ];
     }
 }

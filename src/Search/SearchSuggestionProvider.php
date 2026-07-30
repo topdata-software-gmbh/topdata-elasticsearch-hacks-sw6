@@ -20,6 +20,11 @@ class SearchSuggestionProvider implements SearchProviderInterface
 
     public function search(string $term, SalesChannelContext $context, int $limit): array
     {
-        return $this->searchSuggestionService->search($term, $limit);
+        $result = $this->searchSuggestionService->search($term, $limit);
+
+        return [
+            'items' => $result['items'],
+            'total' => $result['total'],
+        ];
     }
 }

@@ -11,6 +11,14 @@ class ManufacturerSearchService
     public function search(string $query, int $limit = 5): array
     {
         $qb = $this->connection->createQueryBuilder();
+        $qb->select('COUNT(*)')
+            ->from('product_manufacturer', 'm')
+            ->innerJoin('m', 'product_manufacturer_translation', 'mt', 'mt.product_manufacturer_id = m.id')
+            ->where('mt.name LIKE :query')
+            ->setParameter('query', '%' . $query . '%');
+        $total = (int) $qb->executeQuery()->fetchOne();
+
+        $qb = $this->connection->createQueryBuilder();
         $qb->select('m.id', 'mt.name', 'LOWER(mt.name) as name_lower')
             ->from('product_manufacturer', 'm')
             ->innerJoin('m', 'product_manufacturer_translation', 'mt', 'mt.product_manufacturer_id = m.id')
@@ -21,9 +29,12 @@ class ManufacturerSearchService
 
         $rows = $qb->executeQuery()->fetchAllAssociative();
 
-        return array_map(fn(array $row) => [
-            'id' => bin2hex($row['id']),
-            'name' => $row['name'],
-        ], $rows);
+        return [
+            'items' => array_map(fn(array $row) => [
+                'id' => bin2hex($row['id']),
+                'name' => $row['name'],
+            ], $rows),
+            'total' => $total,
+        ];
     }
 }

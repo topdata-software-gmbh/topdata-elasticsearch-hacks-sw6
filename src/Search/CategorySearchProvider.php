@@ -39,6 +39,9 @@ class CategorySearchProvider implements SearchProviderInterface
             ];
         }
 
-        return $items;
+        return [
+            'items' => $items,
+            'total' => $result['total'],
+        ];
     }
 }
