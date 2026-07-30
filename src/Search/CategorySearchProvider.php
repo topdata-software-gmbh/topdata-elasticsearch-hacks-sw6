@@ -26,9 +26,15 @@ class CategorySearchProvider implements SearchProviderInterface
 
         $items = [];
         foreach ($result['categories'] as $category) {
+            $breadcrumb = $category->getBreadcrumb();
+            $breadcrumbStr = is_array($breadcrumb) && count($breadcrumb) > 0
+                ? implode(' › ', $breadcrumb)
+                : null;
+
             $items[] = [
                 'id' => $category->getId(),
                 'name' => $category->getName(),
+                'breadcrumb' => $breadcrumbStr,
                 'url' => $this->router->generate('frontend.navigation.page', ['navigationId' => $category->getId()]),
             ];
         }

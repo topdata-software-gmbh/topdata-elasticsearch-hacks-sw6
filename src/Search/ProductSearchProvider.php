@@ -51,9 +51,13 @@ class ProductSearchProvider implements SearchProviderInterface
                 $imageUrl = $product->getCover()->getMedia()->getUrl();
             }
 
+            $customFields = $product->getCustomFields();
+            $subtitle = is_array($customFields) ? ($customFields['tdg_props_mig_zusatztext'] ?? null) : null;
+
             $items[] = [
                 'id' => $product->getId(),
                 'name' => $product->getName(),
+                'subtitle' => $subtitle,
                 'url' => $this->router->generate('frontend.detail.page', ['productId' => $product->getId()]),
                 'imageUrl' => $imageUrl,
                 'price' => $price ? number_format($price->getUnitPrice(), 2, '.', '') : null,
